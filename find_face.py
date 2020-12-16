@@ -69,16 +69,15 @@ while True:
 			# aspect_ratio = x_dim/y_dim
 			if x_dim >= y_dim :
 				scale = y_dim / face_px
-				x_size = int(x_dim/scale)
-				x_start = int((x_size - face_px) /2)
-				roi = cv2.resize(roi, x_size, face_px))
+				x_size = int(x_dim / scale)
+				x_start = int((x_size - face_px) / 2)
+				roi = cv2.resize(roi, (x_size, face_px))
 				roi = roi[0:111, x_start:x_start + face_px - 1]		
 			else:
 				scale = x_dim / face_px
 				y_size = int(y_dim/scale)
 				y_start = int((y_size - face_px) /2)
-				roi = cv2.resize(roi, y_size, face_px))
-				roi = cv2.resize(roi, (face_px, y_size)))	
+				roi = cv2.resize(roi, (face_px, y_size))	
 				roi = roi[y_start:y_start + face_px - 1, 0:111]	
 			cv2.imshow("Face",roi)
 
