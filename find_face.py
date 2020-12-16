@@ -18,7 +18,7 @@ resolution = (width, height)
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", required=True,
 	help="path to TensorFlow Lite object detection model")
-ap.add_argument("-c", "--confidence", type=float, default=0.7,
+ap.add_argument("-c", "--confidence", type=float, default=0.9,
 	help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
 
@@ -50,7 +50,7 @@ while True:
 	# make predictions on the input frame
 	start = time.time()
 	results = model.detect_with_image(frame, threshold=args["confidence"],
-		keep_aspect_ratio=True, relative_coord=False, top_k=3)
+		keep_aspect_ratio=True, relative_coord=False, top_k=1)
 	end = time.time()
 
 	# loop over the results
@@ -59,7 +59,7 @@ while True:
 		box = r.bounding_box.flatten().astype("int")
 		(startX, startY, endX, endY) = box
 		# label = labels[r.label_id]
-
+		roi = orig[startY:endY, startX:endX]
 		# draw the bounding box and label on the image
 		cv2.rectangle(orig, (startX, startY), (endX, endY),
 			(0, 255, 0), 2)
@@ -67,14 +67,16 @@ while True:
 		text = "{}: {:.2f}%".format("face", r.score * 100)
 		cv2.putText(orig, text, (startX, y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+		cv2.imshow("Face",roi)
 
 	# show the output frame and wait for a key press
-	cv2.imshow("Frame", orig)
+	# cv2.imshow("Dalek Viewpoint", orig)
 	key = cv2.waitKey(1) & 0xFF
 
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
 		break
+
 
 # do a bit of cleanup
 cv2.destroyAllWindows()
