@@ -14,6 +14,8 @@ height = 720
 width = 1280
 resolution = (width, height)
 
+face_px = 112
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", required=True,
@@ -59,7 +61,27 @@ while True:
 		box = r.bounding_box.flatten().astype("int")
 		(startX, startY, endX, endY) = box
 		# label = labels[r.label_id]
-		roi = orig[startY:endY, startX:endX]
+		x_dim = endX - startX
+		y_dim = endY - startY
+
+		if x_dim > face_px and y_dim >= face_px:
+			roi = orig[startY:endY, startX:endX]
+			# aspect_ratio = x_dim/y_dim
+			if x_dim >= y_dim :
+				scale = y_dim / face_px
+				x_size = int(x_dim/scale)
+				x_start = int((x_size - face_px) /2)
+				roi = cv2.resize(roi, x_size, face_px))
+				roi = roi[0:111, x_start:x_start + face_px - 1]		
+			else:
+				scale = x_dim / face_px
+				y_size = int(y_dim/scale)
+				y_start = int((y_size - face_px) /2)
+				roi = cv2.resize(roi, y_size, face_px))
+				roi = cv2.resize(roi, (face_px, y_size)))	
+				roi = roi[y_start:y_start + face_px - 1, 0:111]	
+			cv2.imshow("Face",roi)
+
 		# draw the bounding box and label on the image
 		cv2.rectangle(orig, (startX, startY), (endX, endY),
 			(0, 255, 0), 2)
@@ -67,7 +89,7 @@ while True:
 		text = "{}: {:.2f}%".format("face", r.score * 100)
 		cv2.putText(orig, text, (startX, y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-		cv2.imshow("Face",roi)
+
 
 	# show the output frame and wait for a key press
 	# cv2.imshow("Dalek Viewpoint", orig)
