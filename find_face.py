@@ -11,8 +11,8 @@ import time
 import cv2
 
 height = 720
-width = 1080
-resolution = (height, width)
+width = 1280
+resolution = (width, height)
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
