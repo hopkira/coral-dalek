@@ -10,7 +10,7 @@ import imutils
 import time
 import cv2
 
-height = 1920
+height = 720
 width = 1080
 resolution = (height, width)
 
