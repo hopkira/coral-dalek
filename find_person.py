@@ -14,21 +14,9 @@ import cv2
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", required=True,
 	help="path to TensorFlow Lite object detection model")
-#ap.add_argument("-l", "--labels", required=True,
-#	help="path to labels file")
 ap.add_argument("-c", "--confidence", type=float, default=0.3,
 	help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
-
-# initialize the labels dictionary
-#print("[INFO] parsing class labels...")
-#labels = {}
-
-# loop over the class labels file
-#for row in open(args["labels"]):
-#	# unpack the row and update the labels dictionary
-#	(classID, label) = row.strip().split(maxsplit=1)
-#	labels[int(classID)] = label.strip()
 
 # load the Google Coral object detection model
 print("[INFO] loading Coral model...")
@@ -57,7 +45,7 @@ while True:
 	# make predictions on the input frame
 	start = time.time()
 	results = model.DetectWithImage(frame, threshold=args["confidence"],
-		keep_aspect_ratio=True, relative_coord=False)
+		keep_aspect_ratio=True, relative_coord=False, top_k=3)
 	end = time.time()
 
 	# loop over the results
@@ -65,13 +53,13 @@ while True:
 		# extract the bounding box and box and predicted class label
 		box = r.bounding_box.flatten().astype("int")
 		(startX, startY, endX, endY) = box
-		label = labels[r.label_id]
+		# label = labels[r.label_id]
 
 		# draw the bounding box and label on the image
 		cv2.rectangle(orig, (startX, startY), (endX, endY),
 			(0, 255, 0), 2)
 		y = startY - 15 if startY - 15 > 15 else startY + 15
-		text = "{}: {:.2f}%".format(label, r.score * 100)
+		text = "{}: {:.2f}%".format("face", r.score * 100)
 		cv2.putText(orig, text, (startX, y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
