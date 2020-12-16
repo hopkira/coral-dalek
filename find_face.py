@@ -1,5 +1,5 @@
 # USAGE
-# python find_face.py --model /usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite
+    # python3 find_face.py --model /usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite
 
 # import the necessary packages
 from edgetpu.detection.engine import DetectionEngine
