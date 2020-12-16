@@ -10,6 +10,10 @@ import imutils
 import time
 import cv2
 
+height = 1920
+width = 1080
+resolution = (height, width)
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", required=True,
@@ -24,7 +28,7 @@ model = DetectionEngine(args["model"])
 
 # initialize the video stream and allow the camera sensor to warmup
 print("[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
+vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 30).start()
 #vs = VideoStream(usePiCamera=False).start()
 time.sleep(2.0)
 
