@@ -14,7 +14,7 @@ import cv2
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", required=True,
 	help="path to TensorFlow Lite object detection model")
-ap.add_argument("-c", "--confidence", type=float, default=0.3,
+ap.add_argument("-c", "--confidence", type=float, default=0.7,
 	help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
 
@@ -33,7 +33,8 @@ while True:
 	# grab the frame from the threaded video stream and resize it
 	# to have a maximum width of 500 pixels
 	frame = vs.read()
-	frame = imutils.resize(frame, width=500)
+	# frame = imutils.resize(frame, width=500)
+	frame = imutils.resize(frame)
 	orig = frame.copy()
 
 	# prepare the frame for object detection by converting (1) it
