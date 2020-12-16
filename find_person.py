@@ -1,5 +1,5 @@
 # USAGE
-# python detect_video.py --model mobilenet_ssd_v2/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite --labels mobilenet_ssd_v2/coco_labels.txt
+# python find_face.py --model /usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite
 
 # import the necessary packages
 from edgetpu.detection.engine import DetectionEngine
@@ -14,21 +14,21 @@ import cv2
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", required=True,
 	help="path to TensorFlow Lite object detection model")
-ap.add_argument("-l", "--labels", required=True,
-	help="path to labels file")
+#ap.add_argument("-l", "--labels", required=True,
+#	help="path to labels file")
 ap.add_argument("-c", "--confidence", type=float, default=0.3,
 	help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
 
 # initialize the labels dictionary
-print("[INFO] parsing class labels...")
-labels = {}
+#print("[INFO] parsing class labels...")
+#labels = {}
 
 # loop over the class labels file
-for row in open(args["labels"]):
-	# unpack the row and update the labels dictionary
-	(classID, label) = row.strip().split(maxsplit=1)
-	labels[int(classID)] = label.strip()
+#for row in open(args["labels"]):
+#	# unpack the row and update the labels dictionary
+#	(classID, label) = row.strip().split(maxsplit=1)
+#	labels[int(classID)] = label.strip()
 
 # load the Google Coral object detection model
 print("[INFO] loading Coral model...")
