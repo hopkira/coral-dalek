@@ -3,6 +3,7 @@ from imutils.video import VideoStream
 import dlib
 import imutils
 import cv2
+import time
 
 height = 720
 width = 1280
