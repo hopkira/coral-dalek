@@ -9,6 +9,7 @@ import argparse
 import imutils
 import time
 import cv2
+import dlib
 
 height = 720
 width = 1280
