@@ -1,5 +1,6 @@
 from edgetpu.detection.engine import DetectionEngine
 from imutils.video import VideoStream
+from PIL import Image
 import dlib
 import imutils
 import cv2
