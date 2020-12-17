@@ -33,7 +33,7 @@ while True:
     for r in results:
         box = r.bounding_box.flatten().astype("int")
         (startX, startY, endX, endY) = box
-        d = dlib.rectange(left=startX,right=endX,top=startY,bottom=endY)
+        d = dlib.rectangle(left=startX,right=endX,top=startY,bottom=endY)
         shape = sp(np_frame, d)
         win.clear_overlay()
         win.add_overlay(d)
