@@ -36,8 +36,12 @@ while True:
             (startX, startY, endX, endY) = face_box
             box = dlib.rectangle(left=startX,right=endX,top=startY,bottom=endY)
             shape = shape_pred(np_frame, box)
-            for point in shape.full_object_detection:
-                print("X:",point.x,"Y:",point.y)
+            left_x = shape.part(0).x
+            right_x = shape.part(3).x
+            left_y = shape.part(0).y
+            right_y = shape.part(3).y
+            distance = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
+            print("Distance: ",distance)
             # win.clear_overlay()
             # win.add_overlay(d)
             # win.add_overlay(shape)
