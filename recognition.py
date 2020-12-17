@@ -21,7 +21,7 @@ time.sleep(2.0)
 
 while True:
     frame = vs.read()
-    frame = imutils.resize(frame)
+    frame = imutils.resize(frame, width=500)
     np_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame = Image.fromarray(np_frame)
     win.set_image(np_frame)
