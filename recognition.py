@@ -22,13 +22,14 @@ while True:
     frame = vs.read()
     frame = imutils.resize(frame)
     np_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = Image.fromarray(np_frame)
     win.clear_overlay()
     win.set_image(np_frame)
     results = model.detect_with_image(frame,
-        threshold=0.9,
-        keep_aspect_ratio=True, 
-        relative_coord=False, 
-        top_k=1)
+        threshold = 0.9,
+        keep_aspect_ratio = True, 
+        relative_coord = False, 
+        top_k = 1)
     for r in results:
         box = r.bounding_box.flatten().astype("int")
         (startX, startY, endX, endY) = box
