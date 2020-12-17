@@ -15,6 +15,7 @@ facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v
 win = dlib.image_window()
 
 vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 30).start()
+time.sleep(2.0)
 
 while True:
     frame = vs.read()
