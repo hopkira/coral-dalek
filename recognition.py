@@ -1,6 +1,7 @@
 from edgetpu.detection.engine import DetectionEngine
 from imutils.video import VideoStream
 import dlib
+import imutils
 import cv2
 
 height = 720
@@ -17,6 +18,7 @@ vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 3
 
 while True:
     frame = vs.read()
+    frame = imutils.resize(frame)
     np_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     win.clear_overlay()
     win.set_image(np_frame)
