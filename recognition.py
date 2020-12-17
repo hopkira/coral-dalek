@@ -36,11 +36,16 @@ while True:
             (startX, startY, endX, endY) = face_box
             box = dlib.rectangle(left=startX,right=endX,top=startY,bottom=endY)
             shape = shape_pred(np_frame, box)
+            for point in shape.full_object_detection:
+                print("X:",point.x,"Y:",point.y)
             # win.clear_overlay()
             # win.add_overlay(d)
             # win.add_overlay(shape)
-            face_img = dlib.get_face_chip(np_frame, shape)
-            win.set_image(face_img)
+            # face_img = dlib.get_face_chip(np_frame, shape)
+            # win.set_image(face_img)
             #face_descriptor = facerec.compute_face_descriptor(face_chip)
+            # np.linalg.norm(known_faces - face, axis=1)
+            # return np.linalg.norm(face_encodings - face_to_compare, axis=1)
+            # dlib.full_object_detection, idx:
     except KeyboardInterrupt:
         vs.stop()
