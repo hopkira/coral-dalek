@@ -6,8 +6,8 @@ import imutils
 import cv2
 import time
 
-height = 720
-width = 1280
+height = 480
+width = 640
 resolution = (width, height)
 
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
@@ -16,12 +16,12 @@ facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v
 
 win = dlib.image_window()
 
-vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 30).start()
+vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 60).start()
 time.sleep(2.0)
 
 while True:
     frame = vs.read()
-    frame = imutils.resize(frame, width=500)
+    # frame = imutils.resize(frame, width=500)
     np_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame = Image.fromarray(np_frame)
     # win.set_image(np_frame)
@@ -41,7 +41,7 @@ while True:
         face_chip = dlib.get_face_chip(np_frame, shape)
         win.set_image(face_chip)
         #face_descriptor = facerec.compute_face_descriptor(face_chip)
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord("q"):
-            break
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
 vs.stop()
