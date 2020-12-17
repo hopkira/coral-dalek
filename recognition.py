@@ -24,7 +24,7 @@ while True:
     frame = imutils.resize(frame, width=500)
     np_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame = Image.fromarray(np_frame)
-    win.set_image(np_frame)
+    # win.set_image(np_frame)
     results = model.detect_with_image(frame,
         threshold = 0.9,
         keep_aspect_ratio = True, 
@@ -35,9 +35,12 @@ while True:
         (startX, startY, endX, endY) = box
         d = dlib.rectangle(left=startX,right=endX,top=startY,bottom=endY)
         shape = sp(np_frame, d)
-        win.clear_overlay()
-        win.add_overlay(d)
-        win.add_overlay(shape)
+        # win.clear_overlay()
+        # win.add_overlay(d)
+        # win.add_overlay(shape)
+        face_chip = dlib.get_face_chip(np_frame, shape)
+        win.set_image(face_chip)
+        #face_descriptor = facerec.compute_face_descriptor(face_chip)
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):
             break
