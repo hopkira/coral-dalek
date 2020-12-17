@@ -24,7 +24,6 @@ while True:
     frame = imutils.resize(frame)
     np_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame = Image.fromarray(np_frame)
-    win.clear_overlay()
     win.set_image(np_frame)
     results = model.detect_with_image(frame,
         threshold = 0.9,
@@ -34,6 +33,11 @@ while True:
     for r in results:
         box = r.bounding_box.flatten().astype("int")
         (startX, startY, endX, endY) = box
+        d = dlib.rectange(left=startX,right=endX,top=startY,bottom=endY)
+        shape = sp(np_frame, d)
+        win.clear_overlay()
+        win.add_overlay(d)
+        win.add_overlay(shape)
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):
             break
