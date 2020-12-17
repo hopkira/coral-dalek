@@ -6,8 +6,8 @@ import imutils
 import cv2
 import time
 
-height = 720
-width = 1080
+height = 1080
+width = 1920
 resolution = (width, height)
 
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
@@ -16,7 +16,7 @@ facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v
 
 win = dlib.image_window()
 
-vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 60).start()
+vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 30).start()
 time.sleep(2.0)
 
 while True:
@@ -41,7 +41,8 @@ while True:
             left_y = shape.part(0).y
             right_y = shape.part(3).y
             distance = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
-            print("Distance: ",distance)
+            bearing = (width / 2) - ((right_x + left_x) /2)
+            print("Distance: ",distance, "Bearing: ",bearing)
             # win.clear_overlay()
             # win.add_overlay(d)
             # win.add_overlay(shape)
