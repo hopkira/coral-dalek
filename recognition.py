@@ -34,6 +34,7 @@ time.sleep(2.0) # wait for camera feed to start
 def calc_position(eye_width, eye_offset):
     offset = pixel_to_m(eye_offset)
     dist = pixel_to_m(eye_width)
+    print('Offset = %.2fm Dist = %.2f m Atan2 = %.4f' % (offset, dist, math.atan2(offset,dist)))
     return dict(angle = math.atan2(offset,dist), dist = dist)
 
 def pixel_to_m(pixels):
@@ -68,7 +69,7 @@ while True:
                 eye_offset = (WIDTH / 2) - ((right_x + left_x) /2)
                 position = calc_position(eye_width=eye_width, eye_offset=eye_offset)
                 #print('Distance = %.2fpx Offset = %.2f px' % (eye_width, eye_offset))
-                print('Distance = %.2fm Angle = %.2f radians' % (position['dist'], position['angle']))
+                #print('Distance = %.2fm Angle = %.2f radians' % (position['dist'], position['angle']))
                 #win.clear_overlay()
                 #win.add_overlay(shape,white)
                 #win.add_overlay(box,white)
