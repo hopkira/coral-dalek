@@ -6,6 +6,7 @@ import imutils
 import cv2
 import time
 import math
+import sys
 
 HEIGHT = 1088 # pixels
 WIDTH = 1920 # pixels
@@ -81,3 +82,4 @@ while True:
     except KeyboardInterrupt:
         vs.stop()
         print("Stopped video stream")
+        sys.exit(0)
