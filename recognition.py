@@ -67,6 +67,7 @@ while True:
                 eye_offset = (WIDTH / 2) - ((right_x + left_x) /2)
                 position = calc_position(eye_width=eye_width, eye_offset=eye_offset)
                 degrees = math.degrees(position['angle'])
+                print('Distance = %.2fpx Offset = %.2f px' % (eye_width, eye_offset))
                 print('Distance = %.2fm Angle = %.2f degrees' % (position['dist'], degrees))
                 #win.clear_overlay()
                 #win.add_overlay(shape,white)
