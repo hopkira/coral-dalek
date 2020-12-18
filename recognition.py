@@ -10,6 +10,8 @@ height = 1080
 width = 1920
 resolution = (width, height)
 
+white = dlib.rgb(255,255,255)
+
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
@@ -44,12 +46,11 @@ while True:
             distance = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
             bearing = (width / 2) - ((right_x + left_x) /2)
             text = "Distance: " + str(int(distance)) + "Bearing: " + str(int(bearing))
-          
-            print("Distance: ",distance, "Bearing: ",bearing)
+            #print("Distance: ",distance, "Bearing: ",bearing)
             win.clear_overlay()
             win.add_overlay(box)
             win.add_overlay(shape)
-            win.add_overlay(box, text)
+            win.add_overlay(box, white, text)
             # face_img = dlib.get_face_chip(np_frame, shape)
             # win.set_image(face_img)
             # face_descriptor = facerec.compute_face_descriptor(face_chip)
