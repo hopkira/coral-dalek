@@ -49,7 +49,7 @@ while True:
             #print("Distance: ",distance, "Bearing: ",bearing)
             win.clear_overlay()
             win.add_overlay(shape)
-            win.add_overlay(box::overlay_rect, white, text)
+            win.add_overlay(image_window::overlay_rect(white, text))
             # face_img = dlib.get_face_chip(np_frame, shape)
             # win.set_image(face_img)
             # face_descriptor = facerec.compute_face_descriptor(face_chip)
