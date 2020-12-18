@@ -7,7 +7,7 @@ import cv2
 import time
 import math
 
-HEIGHT = 1080 # pixels
+HEIGHT = 1088 # pixels
 WIDTH = 1920 # pixels
 RESOLUTION = (WIDTH, HEIGHT)
 
@@ -66,7 +66,7 @@ while True:
                 left_y = shape.part(0).y
                 right_y = shape.part(3).y
                 eye_width = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
-                eye_offset = (width / 2) - ((right_x + left_x) /2)
+                eye_offset = (WIDTH / 2) - ((right_x + left_x) /2)
                 position = calc_position(eye_width=eye_width, eye_offset=eye_offset)
                 degrees = math.degrees(position['angle'])
                 print('Distance = %.2fm Angle = %.2f degrees' % (position['dist'], degrees))
