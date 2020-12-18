@@ -32,16 +32,10 @@ vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = 3
 time.sleep(2.0) # wait for camera feed to start
 
 def calc_position(eye_width, eye_offset):
-    offset = pixel_to_m(eye_offset)
-    dist = pixel_to_m(eye_width)
-    #print('Offset = %.2fm Dist = %.2f m Atan2 = %.4f' % (offset, dist, math.atan2(offset,dist)))
+    dist = PIX_TO_M / pixels
+    offset = eye_offset / eye_width * EYE_DISTANCE / 1000
+    print('Offset = %.2fm Dist = %.2f m Atan2 = %.4f' % (offset, dist, math.atan2(offset,dist)))
     return dict(angle = math.atan2(offset,dist), dist = dist)
-
-def pixel_to_m(pixels):
-    if pixels:
-        return PIX_TO_M / pixels
-    else:
-        return 10.0
 
 while True:
     try:
