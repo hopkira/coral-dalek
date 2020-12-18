@@ -15,6 +15,7 @@ shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 
 win = dlib.image_window()
+win.set_title("Homing Camera")
 
 vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 30).start()
 time.sleep(2.0)
@@ -25,7 +26,7 @@ while True:
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
         img_frame = Image.fromarray(np_frame)
-        # win.set_image(np_frame)
+        win.set_image(np_frame)
         face_list = model.detect_with_image(img_frame,
             threshold = 0.7,
             keep_aspect_ratio = True, 
@@ -42,13 +43,16 @@ while True:
             right_y = shape.part(3).y
             distance = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
             bearing = (width / 2) - ((right_x + left_x) /2)
+            text = "Distance: " + str(int(distance)) + "Bearing: " + str(int(bearing))
+          
             print("Distance: ",distance, "Bearing: ",bearing)
-            # win.clear_overlay()
-            # win.add_overlay(d)
-            # win.add_overlay(shape)
+            win.clear_overlay()
+            win.add_overlay(box)
+            win.add_overlay(shape)
+            win.add_overlay(box, text)
             # face_img = dlib.get_face_chip(np_frame, shape)
             # win.set_image(face_img)
-            #face_descriptor = facerec.compute_face_descriptor(face_chip)
+            # face_descriptor = facerec.compute_face_descriptor(face_chip)
             # np.linalg.norm(known_faces - face, axis=1)
             # return np.linalg.norm(face_encodings - face_to_compare, axis=1)
             # dlib.full_object_detection, idx:
