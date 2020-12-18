@@ -34,7 +34,7 @@ time.sleep(2.0) # wait for camera feed to start
 def calc_position(eye_width, eye_offset):
     offset = pixel_to_m(eye_offset)
     dist = pixel_to_m(eye_width)
-    return dict(angle = math.atan2(dist,offset), dist = dist)
+    return dict(angle = math.atan2(offset,dist), dist = dist)
 
 def pixel_to_m(pixels):
     if pixels:
