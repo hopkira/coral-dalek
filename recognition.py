@@ -66,7 +66,7 @@ while True:
                 left_y = shape.part(0).y
                 right_y = shape.part(3).y
                 eye_width = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
-                eye_offset = (WIDTH / 2) - ((right_x + left_x) /2)
+                eye_offset = ((right_x + left_x) /2) - (WIDTH / 2)
                 position = calc_position(eye_width=eye_width, eye_offset=eye_offset)
                 #print('Distance = %.2fpx Offset = %.2f px' % (eye_width, eye_offset))
                 #print('Distance = %.2fm Angle = %.2f radians' % (position['dist'], position['angle']))
