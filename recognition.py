@@ -10,7 +10,7 @@ height = 1080
 width = 1920
 resolution = (width, height)
 
-white = dlib.rgb(255,255,255)
+white = dlib.rgb_pixel(255,255,255)
 
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
