@@ -15,7 +15,7 @@ SENSOR_WIDTH = 6.3 # sensor width in mm
 LENS_FOCAL_LENGTH = 6.0 # sensor focal length in mm
 EYE_DISTANCE = 82.0 # distance between edges of eyes in mmm
 
-PIX_TO_M = LENS_FOCAL_LENGTH * EYE_DISTANCE * HEIGHT / SENSOR_WIDTH / 1000.0
+PIX_TO_M = LENS_FOCAL_LENGTH * EYE_DISTANCE * float(WIDTH) / SENSOR_WIDTH / 1000.0
 
 #white = dlib.rgb_pixel(255,255,255)
 
@@ -33,7 +33,7 @@ time.sleep(2.0) # wait for camera feed to start
 def calc_position(eye_width, eye_offset):
     offset = pixel_to_m(eye_offset)
     dist = pixel_to_m(eye_width)
-    return dict(angle = math.atan(offset/dist), dist = dist)
+    return dict(angle = math.atan2(offset,dist), dist = dist)
 
 def pixel_to_m(pixels):
     if pixels:
