@@ -10,14 +10,14 @@ height = 1080
 width = 1920
 resolution = (width, height)
 
-white = dlib.rgb_pixel(255,255,255)
+#white = dlib.rgb_pixel(255,255,255)
 
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 
-win = dlib.image_window()
-win.set_title("Homing Camera")
+#win = dlib.image_window()
+#win.set_title("Homing Camera")
 
 vs = VideoStream(src=0, usePiCamera = True, resolution=resolution, framerate = 30).start()
 time.sleep(2.0)
@@ -28,7 +28,7 @@ while True:
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
         img_frame = Image.fromarray(np_frame)
-        win.set_image(np_frame)
+        #win.set_image(np_frame)
         face_list = model.detect_with_image(img_frame,
             threshold = 0.7,
             keep_aspect_ratio = True, 
@@ -47,9 +47,9 @@ while True:
             bearing = (width / 2) - ((right_x + left_x) /2)
             text = "Distance: " + str(int(distance)) + " Bearing: " + str(int(bearing))
             print(text)
-            win.clear_overlay()
-            win.add_overlay(shape,white)
-            win.add_overlay(box,white)
+            #win.clear_overlay()
+            #win.add_overlay(shape,white)
+            #win.add_overlay(box,white)
             # face_img = dlib.get_face_chip(np_frame, shape)
             # win.set_image(face_img)
             # face_descriptor = facerec.compute_face_descriptor(face_chip)
@@ -58,3 +58,4 @@ while True:
             # dlib.full_object_detection, idx:
     except KeyboardInterrupt:
         vs.stop()
+        print("Stopped video stream")
