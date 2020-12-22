@@ -61,12 +61,12 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
                 initialize = True # files do not exist
             if initialize:
                 # initialize with calling parameters
-                descriptors = descriptor
-                labels = [label]
+                descriptors = face_data['face_descriptor']
+                labels = [directory]
             else:
                 # add calling parameters to end of existing lists
-                descriptors = np.concatenate([descriptors, descriptor], axis=0)
-                labels.append(label)
+                descriptors = np.concatenate([descriptors, face_data['face_descriptor']], axis=0)
+                labels.append(directory)
             # Serialize descriptors and labels
             np.save(DESCRIPTORS, descriptors)
             with open(LABELS, "wb") as f:
