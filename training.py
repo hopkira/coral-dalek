@@ -39,7 +39,7 @@ def save_descriptor(descriptor, label):
         labels.append(label)
     # Serialize descriptors and labels
     np.save(DESCRIPTORS, descriptors)
-    with open(LABELS, "w") as f:
+    with open(LABELS, "wb") as f:
         pickle.dump(labels, f)
     return True
 
