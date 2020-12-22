@@ -22,6 +22,7 @@ win = dlib.image_window()
 win.set_title("Training faces")
 
 def save_descriptor(descriptor, label):
+    print("Got to saving bit")
     initialize = False
     try:
         # deserialize descriptors and labels from disk
