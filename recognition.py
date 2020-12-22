@@ -26,6 +26,9 @@ descriptors = np.load(DESCRIPTORS)
 f = open(LABELS, 'rb')
 labels = pickle.load(f) # in bytes
 
+print(str(labels))
+print(str(descriptors))
+
 win = dlib.image_window()
 win.set_title("Face Chip")
 
@@ -54,7 +57,7 @@ while True:
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
         img_frame = Image.fromarray(np_frame)
-        #win.set_image(np_frame)
+        win.set_image(np_frame)
         face_list = model.detect_with_image(img_frame,
             threshold = 0.7,
             keep_aspect_ratio = True, 
