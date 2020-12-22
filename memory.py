@@ -9,7 +9,7 @@ with picamera.PiCamera(sensor_mode = 2) as camera:
     while True:
         try:
             start = time.perf_counter()
-            camera.capture('/var/tmp/capture.jpg', 'rgb')
+            camera.capture('/var/tmp/capture.jpg')
             image = Image.open('/var/tmp/capture.jpg')
             np_img = np.asarray(image)
             print(f'Captured {np_img.shape[1]}x{np_img.shape[0]}x{np_img.shape[2]} numpy array')
