@@ -17,7 +17,7 @@ EYE_DISTANCE = 82.0 # distance between edges of eyes in mmm (NOT pupil distance)
 
 PIX_TO_M = LENS_FOCAL_LENGTH * EYE_DISTANCE * float(WIDTH) / SENSOR_WIDTH / 1000.0
 
-DESCRIPTORS = "face_descriptors.np"
+DESCRIPTORS = "face_descriptors.npy"
 LABELS = "labels.pickle"
 
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
