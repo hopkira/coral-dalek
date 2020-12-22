@@ -49,15 +49,15 @@ parser.add_argument('--input',
 
 args = parser.parse_args()
 
-model = DetectionEngine(args['model'])
-DESCRIPTORS = args['descriptors']
-LABELS = args['label']
+model = DetectionEngine(args.model)
+DESCRIPTORS = args.descriptor
+LABELS = args.label
 
 def save_descriptor(descriptor, label):
 
     return True
 
-for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
+for root, dirs, files in os.walk(args.input):
     for file_name in files:
         # create a fully described path for each training image
         # file_name = str(num)+'.png'
