@@ -23,7 +23,6 @@ from edgetpu.detection.engine import DetectionEngine
 SAMPLES = 8
 CONFIDENCE = 0.7
 
-
 win = dlib.image_window()
 win.set_title("Training faces")
 
@@ -32,20 +31,16 @@ initialize = False
 parser = argparse.ArgumentParser()
 parser.add_argument('--model',
     help='Full path to mobilenet tflite model',
-    nargs = '?',
-    const = "/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
+    default = "/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 parser.add_argument('--label', 
     help='Label file path.',
-    nargs = '?',
-    const = "./labels.pickle")
+    default = "./labels.pickle")
 parser.add_argument('--descriptor', 
     help='Descriptor file path.', 
-    nargs = '?',
-    const = "./face_descriptors.npy")
+    default = "./face_descriptors.npy")
 parser.add_argument('--input',
     help='Training image path.',
-    nargs = '?',
-    const = "/home/pi/dalek-doorman/training")
+    default = "/home/pi/dalek-doorman/training")
 
 args = parser.parse_args()
 
