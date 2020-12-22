@@ -56,7 +56,6 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
                 descriptors = np.load(DESCRIPTORS)
                 f = open(LABELS, 'rb')
                 labels = pickle.load(f)
-                print(str(len(labels)))
             except IOError as error:
                 print("{error} - Recognition DB not found")
                 initialize = True # files do not exist
