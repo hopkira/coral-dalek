@@ -6,10 +6,10 @@ from imutils.video import VideoStream
 from PIL import Image
 from face_extraction import extract_face_data
 
-HEIGHT = 2464 # pixels
-WIDTH = 3280 # pixels
+HEIGHT = 1232 # pixels
+WIDTH = 1640 # pixels
 RESOLUTION = (WIDTH, HEIGHT)
-FRAMERATE = 0.1
+FRAMERATE = 20
 
 SENSOR_WIDTH = 6.3 # sensor width in mm
 LENS_FOCAL_LENGTH = 6.0 # sensor focal length in mm
