@@ -51,20 +51,17 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         face_data = extract_face_data(face = face, np_frame = np_img)
         if face_data:
             win.set_image(face_data['face_chip_img'])
-            print("Got to saving bit")
             try:
                 # deserialize descriptors and labels from disk
                 descriptors = np.load(DESCRIPTORS)
                 f = open(LABELS, 'rb')
-                labels = pickle.load(f) # in bytes
+                labels = pickle.load(f)
                 print(str(len(labels)))
-            except IOError as e:
-                print(e)
+            except IOError as error:
+                print("{error} - Recognition DB not found")
                 initialize = True # files do not exist
-                print("Files do not exist")
             if initialize:
-                # initialize with calling parameters
-                print("Creating new files")
+                print("Creating new recognition DB")
                 descriptors = face_data['face_descriptor']
                 labels = [directory]
             else:
@@ -75,5 +72,5 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
             np.save(DESCRIPTORS, descriptors)
             with open(LABELS, "wb") as f:
                 pickle.dump(labels, f)
-            print("Loaded " + str(train_filename) + " under " + str(directory))
+            print(f"Loaded record #{len(labels)} {train_filename} as {directory}")
 sys.exit("Training completed successfully")
