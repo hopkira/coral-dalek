@@ -49,6 +49,8 @@ parser.add_argument('--input',
 
 args = parser.parse_args()
 
+print(args)
+
 model = DetectionEngine(args.model)
 DESCRIPTORS = args.descriptor
 LABELS = args.label
