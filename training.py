@@ -27,7 +27,7 @@ def save_descriptor(descriptor, label):
         # deserialize descriptors and labels from disk
         descriptors = np.load(DESCRIPTORS)
         f = open(LABELS, 'rb')
-        labels = pickle.load(f)
+        labels = pickle.load(f) # in bytes
     except IOError:
         initialize = True # files do not exist
     if initialize:
