@@ -49,8 +49,8 @@ def recognize_face(face_descriptor, threshold = 0.7):
 print("Starting video stream...")
 vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = FRAMERATE).start()
 
-print("Waiting 5 seconds for camera feed to start...")
-time.sleep(5.0) # wait for camera feed to start
+print("Waiting 10 seconds for camera feed to start...")
+time.sleep(10.0) # wait for camera feed to start
 print("Opening camera stream...")
 
 while True:
