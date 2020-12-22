@@ -13,7 +13,6 @@ with picamera.PiCamera(sensor_mode = 2) as camera:
             image = Image.open('/var/tmp/capture.jpg')
             np_img = np.asarray(image)
             print(f'Captured {np_img.shape[1]}x{np_img.shape[0]}x{np_img.shape[2]} numpy array')
-            np_img.truncate(0)
             end = time.perf_counter()
             print(f'Frame taken in {(end-start)*1000} ms')
         except KeyError:
