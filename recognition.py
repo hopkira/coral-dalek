@@ -6,10 +6,10 @@ from imutils.video import VideoStream
 from PIL import Image
 from face_extraction import extract_face_data
 
-HEIGHT = 1080 # pixels
-WIDTH = 1920 # pixels
+HEIGHT = 2464 # pixels
+WIDTH = 3280 # pixels
 RESOLUTION = (WIDTH, HEIGHT)
-FRAMERATE = 1
+FRAMERATE = 0.1
 
 SENSOR_WIDTH = 6.3 # sensor width in mm
 LENS_FOCAL_LENGTH = 6.0 # sensor focal length in mm
@@ -25,6 +25,8 @@ model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_fac
 
 print("Retrieving recognition database...")
 descriptors = np.load(DESCRIPTORS)
+# will be loaded as a 1D array, so needs to be
+# reshaped back into a n x 128 arrary
 descriptors = descriptors.reshape (-1,128)
 
 f = open(LABELS, 'rb')
@@ -55,8 +57,8 @@ def recognize_face(face_descriptor, threshold = 0.7):
 print("Starting video stream...")
 vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = FRAMERATE).start()
 
-print("Waiting 10 seconds for camera feed to start...")
-time.sleep(10.0) # wait for camera feed to start
+print("Waiting 20 seconds for camera feed to start...")
+time.sleep(20.0) # wait for camera feed to start
 print("Opening camera stream...")
 
 while True:
