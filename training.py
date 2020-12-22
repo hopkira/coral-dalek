@@ -55,7 +55,6 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         img = Image.fromarray(np_img)
         win.set_image(np_img)
         win.set_title(directory)
-        time.sleep(0.5)
         face_list = model.detect_with_image(img,
             threshold=0.7,
             keep_aspect_ratio=True, 
@@ -69,7 +68,6 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         face_data = extract_face_data(face = face, np_frame = np_img)
         if face_data:
             win.set_image(face_data['face_chip_img'])
-            time.sleep(0.5)
             save_descriptor(descriptor = face_data['face_descriptor'], label = directory)
             print("Loaded " + str(train_filename) + " under " + str(directory))
 sys.exit("Training completed successfully")
