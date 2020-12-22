@@ -5,7 +5,6 @@ import cv2
 from PIL import Image
 with picamera.PiCamera(sensor_mode = 2) as camera:
     camera.resolution = (2592, 1944)
-    time.sleep(10)
     while True:
         try:
             start = time.perf_counter()
