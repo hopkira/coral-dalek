@@ -1,9 +1,18 @@
-# This routine iterates across all files and directories
-# in the training directory.
-# Each person has their own directory, with the photos being
-# stored as .png files.
-# The files should be called '0.png', '1.png' etc.
+#
+# Licensed under the The Unlicense
+#
+"""Enrolls face images into a recognition database.  Database includes a label
+for each face and a 128D encoding created by dlib
 
+python3 training.py \
+--model /usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite \
+--label ./labels.pickle \
+--descriptor ./face_descriptors.npy \
+--input /home/pi/dalek-doorman/training
+
+"""
+
+import argparse
 import os, sys, pickle
 import cv2, dlib, time
 import numpy as np
@@ -14,14 +23,25 @@ from edgetpu.detection.engine import DetectionEngine
 SAMPLES = 8
 CONFIDENCE = 0.7
 
-model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
-DESCRIPTORS = "./face_descriptors.npy"
-LABELS = "./labels.pickle"
 
 win = dlib.image_window()
 win.set_title("Training faces")
 
 initialize = False
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--model',
+    help='Full path to mobilenet tflite model'
+    default = "/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
+parser.add_argument('--label', help='Label file path.', default = "./labels.pickle")
+parser.add_argument('--descriptor', help='Descriptor file path.', default = "./face_descriptors.npy")
+parser.add_argument('--input', help='Training image path.', default = "/home/pi/dalek-doorman/training")
+
+args = parser.parse_args()
+
+model = DetectionEngine(args['model'])
+DESCRIPTORS = args['descriptors']
+LABELS = args['label']
 
 def save_descriptor(descriptor, label):
 
