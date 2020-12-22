@@ -20,8 +20,10 @@ PIX_TO_M = LENS_FOCAL_LENGTH * EYE_DISTANCE * float(WIDTH) / SENSOR_WIDTH / 1000
 DESCRIPTORS = "face_descriptors.npy"
 LABELS = "labels.pickle"
 
+print("Loading detection engine...")
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 
+print("Retrieving recognition database...")
 descriptors = np.load(DESCRIPTORS)
 f = open(LABELS, 'rb')
 labels = pickle.load(f) # in bytes
@@ -34,12 +36,6 @@ def calc_position(eye_width, eye_offset):
     offset = eye_offset / eye_width * EYE_DISTANCE / 1000
     return dict(angle = math.atan2(offset,dist), dist = dist)
 
-vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = FRAMERATE).start()
-
-print("Waiting 5 seconds for camera feed to start...")
-time.sleep(5.0) # wait for camera feed to start
-print("Opening camera stream...")
-
 def recognize_face(face_descriptor, threshold = 0.7):
     distances = np.linalg.norm(descriptors - face_descriptor, axis=1)
     argmin = np.argmin(distances)
@@ -49,6 +45,13 @@ def recognize_face(face_descriptor, threshold = 0.7):
     else:
         name = labels[argmin]
     return name
+
+print("Starting video stream...")
+vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = FRAMERATE).start()
+
+print("Waiting 5 seconds for camera feed to start...")
+time.sleep(5.0) # wait for camera feed to start
+print("Opening camera stream...")
 
 while True:
     try:
