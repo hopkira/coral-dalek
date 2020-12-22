@@ -25,6 +25,8 @@ model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_fac
 
 print("Retrieving recognition database...")
 descriptors = np.load(DESCRIPTORS)
+descriptors = descriptors.reshape (-1,128)
+
 f = open(LABELS, 'rb')
 labels = pickle.load(f) # in bytes
 
@@ -40,7 +42,7 @@ def recognize_face(face_descriptor, threshold = 0.7):
     print(type(descriptors))
     print(descriptors.shape)
     print(type(face_descriptor))
-    print(descriptor.shape)
+    print(face_descriptor.shape)
     distances = np.linalg.norm(descriptors - face_descriptor, axis=1)
     argmin = np.argmin(distances)
     min_dist = distances[argmin]
