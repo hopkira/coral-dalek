@@ -15,7 +15,7 @@ SAMPLES = 8
 CONFIDENCE = 0.7
 
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
-DESCRIPTORS = "./face_descriptors"
+DESCRIPTORS = "./face_descriptors.npy"
 LABELS = "./labels.pickle"
 
 win = dlib.image_window()
