@@ -63,6 +63,7 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
                 print("Creating new recognition DB")
                 descriptors = face_data['face_descriptor']
                 labels = [directory]
+                initialize = False
             else:
                 # add calling parameters to end of existing lists
                 descriptors = np.concatenate([descriptors, face_data['face_descriptor']], axis=0)
