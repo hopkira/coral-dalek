@@ -31,11 +31,21 @@ initialize = False
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model',
-    help='Full path to mobilenet tflite model'
-    default = "/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
-parser.add_argument('--label', help='Label file path.', default = "./labels.pickle")
-parser.add_argument('--descriptor', help='Descriptor file path.', default = "./face_descriptors.npy")
-parser.add_argument('--input', help='Training image path.', default = "/home/pi/dalek-doorman/training")
+    help='Full path to mobilenet tflite model',
+    nargs = '?',
+    const = "/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
+parser.add_argument('--label', 
+    help='Label file path.',
+    nargs = '?',
+    const = "./labels.pickle")
+parser.add_argument('--descriptor', 
+    help='Descriptor file path.', 
+    nargs = '?',
+    const = "./face_descriptors.npy")
+parser.add_argument('--input',
+    help='Training image path.',
+    nargs = '?',
+    const = "/home/pi/dalek-doorman/training")
 
 args = parser.parse_args()
 
