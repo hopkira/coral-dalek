@@ -1,7 +1,7 @@
 import sys, time
 import picamera
 import picamera.array as npcam
-with picamera.PiCamera(sensor_mode = 2, framerate = 10) as camera:
+with picamera.PiCamera(sensor_mode = 3, framerate = 10) as camera:
     with npcam.PiArrayOutput(camera) as np_frame:
         while True:
             try:
