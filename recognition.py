@@ -37,7 +37,9 @@ def calc_position(eye_width, eye_offset):
     return dict(angle = math.atan2(offset,dist), dist = dist)
 
 def recognize_face(face_descriptor, threshold = 0.7):
-    distances = np.linalg.norm(descriptors - np.asarray(face_descriptor), axis=1)
+    print(type(descriptors))
+    print(type(face_descriptor))
+    distances = np.linalg.norm(descriptors - face_descriptor), axis=1)
     argmin = np.argmin(distances)
     min_dist = distances[argmin]
     if min_dist > threshold:
