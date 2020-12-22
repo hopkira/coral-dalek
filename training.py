@@ -52,7 +52,7 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         directory = root.split(os.path.sep)[-1]
         np_img = cv2.imread(train_filename, cv2.IMREAD_COLOR)
         img = Image.fromarray(np_img)
-        win.set_image(img)
+        win.set_image(np_img)
         win.set_title(directory)
         time.sleep(0.5)
         face_list = model.detect_with_image(img,
