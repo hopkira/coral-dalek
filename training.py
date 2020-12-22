@@ -69,6 +69,6 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
             if face_data:
                 win.set_title(file_name)
                 win.set_image(face_data['face_chip_img'])
-                time.sleep(5)
+                time.sleep(1)
                 save_descriptor(descriptor = face_data['face_descriptor'], label = dir)
 sys.exit("Training completed successfully")
