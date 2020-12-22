@@ -58,7 +58,8 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
                 f = open(LABELS, 'rb')
                 labels = pickle.load(f) # in bytes
                 print(str(len(labels)))
-            except IOError:
+            except IOError as e:
+                print(e)
                 initialize = True # files do not exist
                 print("Files do not exist")
             if initialize:
