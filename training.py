@@ -45,14 +45,14 @@ def save_descriptor(descriptor, label):
     return True
 
 for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
-    for dir in dirs:
-        print('Training subject: ' + dir)  # announce who is being trained
+    for directory in dirs:
+        print('Training subject: ' + directory)  # announce who is being trained
         #  iterate over this number of photo samples for each person
         for file_name in files:
             # create a fully described path for each training image
             # file_name = str(num)+'.png'
-            train_filename = (os.path.join(root, dirs, file_name))
-            print('Training ' + dir + ' with ' + train_filename)
+            train_filename = (os.path.join(root, directory, file_name))
+            print('Training ' + directory + ' with ' + train_filename)
             np_img = cv2.imread(train_filename, cv2.IMREAD_COLOR)
             img = Image.fromarray(np_img)
             face_list = model.detect_with_image(img,
@@ -70,5 +70,5 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
                 win.set_title(file_name)
                 win.set_image(face_data['face_chip_img'])
                 time.sleep(1)
-                save_descriptor(descriptor = face_data['face_descriptor'], label = dir)
+                save_descriptor(descriptor = face_data['face_descriptor'], label = directory)
 sys.exit("Training completed successfully")
