@@ -5,7 +5,7 @@
 # The files should be called '0.png', '1.png' etc.
 
 import os, sys, pickle
-import cv2, dlib
+import cv2, dlib, time
 import numpy as np
 from face_extraction import extract_face_data
 from PIL import Image
@@ -67,6 +67,8 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
             face = face_list[0]
             face_data = extract_face_data(face = face, np_frame = np_img)
             if face_data:
+                win.set_title(file_name)
                 win.set_image(face_data['face_chip_img'])
+                time.sleep(5)
                 save_descriptor(descriptor = face_data['face_descriptor'], label = dir)
 sys.exit("Training completed successfully")
