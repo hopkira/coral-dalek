@@ -11,7 +11,7 @@ with picamera.PiCamera(sensor_mode = 2) as camera:
             camera.capture('/var/tmp/capture.jpg', 'rgb')
             np_img = cv2.imread('/var/tmp/capture.jpg', cv2.IMREAD_COLOR)
             # np_img = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
-            print(f'Captured {np_frame.array.shape[1]}x{np_frame.array.shape[0]} numpy array')
+            print(f'Captured {np_img.array.shape[1]}x{np_img.array.shape[0]}x{np_img.array.shape[2]} numpy array')
             img = Image.fromarray(np_img)
             np_img.truncate(0)
             end = time.perf_counter()
