@@ -26,9 +26,6 @@ descriptors = np.load(DESCRIPTORS)
 f = open(LABELS, 'rb')
 labels = pickle.load(f) # in bytes
 
-print(str(labels))
-print(str(descriptors))
-
 win = dlib.image_window()
 win.set_title("Matched faces")
 
@@ -39,7 +36,9 @@ def calc_position(eye_width, eye_offset):
 
 vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = FRAMERATE).start()
 
-time.sleep(2.0) # wait for camera feed to start
+print("Waiting 5 seconds for camera feed to start...")
+time.sleep(5.0) # wait for camera feed to start
+print("Opening camera stream...")
 
 def recognize_face(face_descriptor, threshold = 0.7):
     distances = np.linalg.norm(descriptors - face_descriptor, axis=1)
