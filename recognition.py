@@ -9,7 +9,7 @@ from face_extraction import extract_face_data
 HEIGHT = 2464 # pixels
 WIDTH = 3280 # pixels
 RESOLUTION = (WIDTH, HEIGHT)
-FRAMERATE = 15
+FRAMERATE = 1
 
 SENSOR_WIDTH = 6.3 # sensor width in mm
 LENS_FOCAL_LENGTH = 6.0 # sensor focal length in mm
@@ -30,7 +30,7 @@ print(str(labels))
 print(str(descriptors))
 
 win = dlib.image_window()
-win.set_title("Face Chip")
+win.set_title("Matched faces")
 
 def calc_position(eye_width, eye_offset):
     dist = PIX_TO_M / eye_width
@@ -57,7 +57,7 @@ while True:
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
         img_frame = Image.fromarray(np_frame)
-        win.set_image(np_frame)
+        #win.set_image(np_frame)
         face_list = model.detect_with_image(img_frame,
             threshold = 0.7,
             keep_aspect_ratio = True, 
