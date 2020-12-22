@@ -1,40 +1,51 @@
+import dlib, imutils, cv2
+import time, math, sys, pickle
+import numpy as np
 from edgetpu.detection.engine import DetectionEngine
 from imutils.video import VideoStream
 from PIL import Image
-import dlib
-import imutils
-import cv2
-import time
-import math
-import sys
+from face_extraction import extract_face_data
 
-HEIGHT = 1088 # pixels
-WIDTH = 1920 # pixels
+HEIGHT = 3280 # pixels
+WIDTH = 2464 # pixels
 RESOLUTION = (WIDTH, HEIGHT)
+FRAMERATE = 15
 
 SENSOR_WIDTH = 6.3 # sensor width in mm
 LENS_FOCAL_LENGTH = 6.0 # sensor focal length in mm
-EYE_DISTANCE = 82.0 # distance between edges of eyes in mmm
+EYE_DISTANCE = 82.0 # distance between edges of eyes in mmm (NOT pupil distance)
 
 PIX_TO_M = LENS_FOCAL_LENGTH * EYE_DISTANCE * float(WIDTH) / SENSOR_WIDTH / 1000.0
 
-#white = dlib.rgb_pixel(255,255,255)
+DESCRIPTORS = "face_descriptors.np"
+LABELS = "labels.pickle"
 
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
-shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
-facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
+
+descriptors = np.load(DESCRIPTORS)
+labels = pickle.load(open(LABELS))
 
 win = dlib.image_window()
 win.set_title("Face Chip")
-
-vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = 30).start()
-
-time.sleep(2.0) # wait for camera feed to start
 
 def calc_position(eye_width, eye_offset):
     dist = PIX_TO_M / eye_width
     offset = eye_offset / eye_width * EYE_DISTANCE / 1000
     return dict(angle = math.atan2(offset,dist), dist = dist)
+
+vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = FRAMERATE).start()
+
+time.sleep(2.0) # wait for camera feed to start
+
+def recognize_face(face_descriptor, threshold = 0.7):
+    distances = np.linalg.norm(descriptors - face_descriptor, axis=1)
+    argmin = np.argmin(distances)
+    min_dist = distances[argmin]
+    if min_dist > threshold:
+        name = "Unknown"
+    else:
+        name = labels[argmin]
+    return name
 
 while True:
     try:
@@ -49,28 +60,12 @@ while True:
             relative_coord = False, 
             top_k = 1)
         for face in face_list:
-            face_box = face.bounding_box.flatten().astype("int")
-            (startX, startY, endX, endY) = face_box
-            box = dlib.rectangle(left=startX,right=endX,top=startY,bottom=endY)
-            shape = shape_pred(np_frame, box)
-            if shape:
-                # win.clear_overlay()
-                # win.add_overlay(shape,white)
-                # win.add_overlay(box,white)
-                face_img = dlib.get_face_chip(np_frame, shape)
-                win.set_image(face_img)
-                face_descriptor = facerec.compute_face_descriptor(face_chip)
-                # np.linalg.norm(known_faces - face, axis=1)
-                # return np.linalg.norm(face_encodings - face_to_compare, axis=1)
-                # dlib.full_object_detection, idx:
-                left_x = shape.part(0).x
-                right_x = shape.part(3).x
-                left_y = shape.part(0).y
-                right_y = shape.part(3).y
-                eye_width = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
-                eye_offset = ((right_x + left_x) /2) - (WIDTH / 2)
-                position = calc_position(eye_width=eye_width, eye_offset=eye_offset)
-                print('Distance = %.2fm Angle = %.2f radians' % (position['dist'], position['angle']))
+            face_data = extract_face_data(face = face, np_frame = np_frame)
+            if face_data:
+                position = calc_position(eye_width = face_data['eye_width'], eye_offset = face_data['eye_offset'])
+                name = recognize_face(face_descriptor = face_data['face_descriptor'])
+                print('%s is at %.2fm and a bearing of %.2f radians' % (name, position['dist'], position['angle']))
+                win.set_image(face_data['face_chip_img'])
     except KeyboardInterrupt:
         vs.stop()
         print("Stopped video stream")
