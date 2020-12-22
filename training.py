@@ -21,6 +21,8 @@ LABELS = "./labels.pickle"
 win = dlib.image_window()
 win.set_title("Training faces")
 
+initialize = False
+
 def save_descriptor(descriptor, label):
 
     return True
@@ -50,7 +52,6 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         if face_data:
             win.set_image(face_data['face_chip_img'])
             print("Got to saving bit")
-            initialize = False
             try:
                 # deserialize descriptors and labels from disk
                 descriptors = np.load(DESCRIPTORS)
@@ -59,8 +60,10 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
                 print(str(len(labels)))
             except IOError:
                 initialize = True # files do not exist
+                print("Files do not exist")
             if initialize:
                 # initialize with calling parameters
+                print("Creating new files")
                 descriptors = face_data['face_descriptor']
                 labels = [directory]
             else:
