@@ -1,4 +1,4 @@
-import system, time
+import sys, time
 import picamera
 import picamera.array as npcam
 with picamera.PiCamera(sensor_mode = 2, framerate = 10) as camera:
