@@ -48,7 +48,7 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
     for file_name in files:
         # create a fully described path for each training image
         # file_name = str(num)+'.png'
-        train_filename = os.path.join(dirs,file_name)
+        train_filename = os.path.join(root,file_name)
         directory = dirs
         np_img = cv2.imread(train_filename, cv2.IMREAD_COLOR)
         img = Image.fromarray(np_img)
