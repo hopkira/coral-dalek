@@ -64,7 +64,7 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         face = face_list[0]
         face_data = extract_face_data(face = face, np_frame = np_img)
         if face_data:
-            win.set_title(file_name)
+            win.set_title(train_filename)
             win.set_image(face_data['face_chip_img'])
             time.sleep(1)
             save_descriptor(descriptor = face_data['face_descriptor'], label = directory)
