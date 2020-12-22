@@ -15,8 +15,8 @@ SAMPLES = 8
 CONFIDENCE = 0.7
 
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
-DESCRIPTORS = "face_descriptors"
-LABELS = "labels.pickle"
+DESCRIPTORS = "./face_descriptors"
+LABELS = "./labels.pickle"
 
 win = dlib.image_window()
 win.set_title("Training faces")
@@ -28,6 +28,7 @@ def save_descriptor(descriptor, label):
         descriptors = np.load(DESCRIPTORS)
         f = open(LABELS, 'rb')
         labels = pickle.load(f) # in bytes
+        print(str(len(labels)))
     except IOError:
         initialize = True # files do not exist
     if initialize:
