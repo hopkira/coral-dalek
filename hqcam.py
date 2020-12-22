@@ -1,8 +1,9 @@
 import sys, time
 import picamera
 import picamera.array as npcam
-with picamera.PiCamera(sensor_mode = 3, framerate = 10) as camera:
+with picamera.PiCamera(sensor_mode = 2) as camera:
     with npcam.PiArrayOutput(camera) as np_frame:
+        camera.resolution = (2592, 1944)
         while True:
             try:
                 start = time.perf_counter()
