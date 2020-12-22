@@ -5,6 +5,7 @@
 for each face and a 128D encoding created by dlib
 
 python3 training.py \
+-v \
 --model /usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite \
 --label ./labels.pickle \
 --descriptor ./face_descriptors.npy \
@@ -20,15 +21,12 @@ from face_extraction import extract_face_data
 from PIL import Image
 from edgetpu.detection.engine import DetectionEngine
 
-SAMPLES = 8
-CONFIDENCE = 0.7
-
-win = dlib.image_window()
-win.set_title("Training faces")
-
 initialize = False
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-v',
+    help = "Preview encoded images",
+    action = 'store_true')
 parser.add_argument('--model',
     help='Full path to mobilenet tflite model',
     default = "/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
@@ -48,6 +46,9 @@ model = DetectionEngine(args.model)
 DESCRIPTORS = args.descriptor
 LABELS = args.label
 
+if args.v:
+    win = dlib.image_window()
+
 def save_descriptor(descriptor, label):
 
     return True
@@ -61,8 +62,6 @@ for root, dirs, files in os.walk(args.input):
         np_img = cv2.imread(train_filename, cv2.IMREAD_COLOR)
         np_img = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(np_img)
-        win.set_image(np_img)
-        win.set_title(directory)
         face_list = model.detect_with_image(img,
             threshold=0.7,
             keep_aspect_ratio=True, 
@@ -75,7 +74,9 @@ for root, dirs, files in os.walk(args.input):
         face = face_list[0]
         face_data = extract_face_data(face = face, np_frame = np_img)
         if face_data:
-            win.set_image(face_data['face_chip_img'])
+            if args.v:
+                win.set_title(directory)
+                win.set_image(face_data['face_chip_img'])
             try:
                 # deserialize descriptors and labels from disk
                 descriptors = np.load(DESCRIPTORS)
