@@ -23,7 +23,8 @@ LABELS = "labels.pickle"
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 
 descriptors = np.load(DESCRIPTORS)
-labels = pickle.load(open(LABELS))
+f = open(LABELS, 'rb')
+labels = pickle.load(f) # in bytes
 
 win = dlib.image_window()
 win.set_title("Face Chip")
