@@ -6,8 +6,8 @@ from imutils.video import VideoStream
 from PIL import Image
 from face_extraction import extract_face_data
 
-HEIGHT = 2464 # pixels
-WIDTH = 3280 # pixels
+HEIGHT = 2400 # pixels
+WIDTH = 3200 # pixels
 RESOLUTION = (WIDTH, HEIGHT)
 FRAMERATE = 5
 

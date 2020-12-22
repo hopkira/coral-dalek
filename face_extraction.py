@@ -5,8 +5,7 @@ shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 
 def extract_face_data(np_frame,face):
-    width = np_frame.shape[0]
-    print(np_frame.shape)
+    width = np_frame.shape[1]
     face_box = face.bounding_box.flatten().astype("int")
     (startX, startY, endX, endY) = face_box
     box = dlib.rectangle(left=startX,right=endX,top=startY,bottom=endY)
