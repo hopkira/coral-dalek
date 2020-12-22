@@ -52,6 +52,9 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         directory = root.split(os.path.sep)[-1]
         np_img = cv2.imread(train_filename, cv2.IMREAD_COLOR)
         img = Image.fromarray(np_img)
+        win.set_image(img)
+        win.set_title(directory)
+        time.sleep(0.5)
         face_list = model.detect_with_image(img,
             threshold=0.7,
             keep_aspect_ratio=True, 
@@ -64,9 +67,8 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         face = face_list[0]
         face_data = extract_face_data(face = face, np_frame = np_img)
         if face_data:
-            win.set_title(train_filename)
             win.set_image(face_data['face_chip_img'])
-            time.sleep(1)
+            time.sleep(0.5)
             save_descriptor(descriptor = face_data['face_descriptor'], label = directory)
             print("Loaded " + str(train_filename) + " under " + str(directory))
 sys.exit("Training completed successfully")
