@@ -22,28 +22,7 @@ win = dlib.image_window()
 win.set_title("Training faces")
 
 def save_descriptor(descriptor, label):
-    print("Got to saving bit")
-    initialize = False
-    try:
-        # deserialize descriptors and labels from disk
-        descriptors = np.load(DESCRIPTORS)
-        f = open(LABELS, 'rb')
-        labels = pickle.load(f) # in bytes
-        print(str(len(labels)))
-    except IOError:
-        initialize = True # files do not exist
-    if initialize:
-        # initialize with calling parameters
-        descriptors = descriptor
-        labels = [label]
-    else:
-        # add calling parameters to end of existing lists
-        descriptors = np.concatenate([descriptors, descriptor], axis=0)
-        labels.append(label)
-    # Serialize descriptors and labels
-    np.save(DESCRIPTORS, descriptors)
-    with open(LABELS, "wb") as f:
-        pickle.dump(labels, f)
+
     return True
 
 for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
@@ -70,6 +49,27 @@ for root, dirs, files in os.walk('/home/pi/dalek-doorman/training'):
         face_data = extract_face_data(face = face, np_frame = np_img)
         if face_data:
             win.set_image(face_data['face_chip_img'])
-            save = save_descriptor(descriptor = face_data['face_descriptor'], label = directory)
-            print("Loaded " + str(train_filename) + " under " + str(directory))
+                print("Got to saving bit")
+        initialize = False
+        try:
+            # deserialize descriptors and labels from disk
+            descriptors = np.load(DESCRIPTORS)
+            f = open(LABELS, 'rb')
+            labels = pickle.load(f) # in bytes
+            print(str(len(labels)))
+        except IOError:
+            initialize = True # files do not exist
+        if initialize:
+            # initialize with calling parameters
+            descriptors = descriptor
+            labels = [label]
+        else:
+            # add calling parameters to end of existing lists
+            descriptors = np.concatenate([descriptors, descriptor], axis=0)
+            labels.append(label)
+        # Serialize descriptors and labels
+        np.save(DESCRIPTORS, descriptors)
+        with open(LABELS, "wb") as f:
+            pickle.dump(labels, f)
+        print("Loaded " + str(train_filename) + " under " + str(directory))
 sys.exit("Training completed successfully")
