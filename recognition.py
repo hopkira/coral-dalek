@@ -1,10 +1,10 @@
 import dlib, imutils, cv2
 import time, math, sys, pickle
 import numpy as np
+from faceextractor import FaceDataExtractor
 from edgetpu.detection.engine import DetectionEngine
 from imutils.video import VideoStream
 from PIL import Image
-from face_extraction import extract_face_data
 
 HEIGHT = 2400 # pixels
 WIDTH = 3200 # pixels
@@ -22,6 +22,7 @@ LABELS = "labels.pickle"
 
 print("Loading detection engine...")
 model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
+face_ext = FaceDataExtractor()
 
 print("Retrieving recognition database...")
 descriptors = np.load(DESCRIPTORS)
@@ -51,7 +52,10 @@ def recognize_face(face_descriptor, threshold = 0.7):
     return name
 
 print("Starting video stream...")
-vs = VideoStream(src=0, usePiCamera = True, resolution=RESOLUTION, framerate = FRAMERATE).start()
+vs = VideoStream(src=0, 
+                 usePiCamera = True, 
+                 resolution=RESOLUTION, 
+                 framerate = FRAMERATE).start()
 
 print("Waiting 20 seconds for camera feed to start...")
 time.sleep(20.0) # wait for camera feed to start
@@ -70,7 +74,7 @@ while True:
             relative_coord = False, 
             top_k = 1)
         for face in face_list:
-            face_data = extract_face_data(face = face, np_frame = np_frame)
+            face_data = face_ext.extract_data(face = face, np_frame = np_frame)
             if face_data:
                 position = calc_position(eye_width = face_data['eye_width'], eye_offset = face_data['eye_offset'])
                 name = recognize_face(face_descriptor = face_data['face_descriptor'])

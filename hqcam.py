@@ -14,4 +14,4 @@ with picamera.PiCamera(sensor_mode = 2) as camera:
                 print(f'Frame taken in {(end-start)*1000} ms')
             except KeyError:
                 camera.close()
-                system.exit("Numpy capture complete")
+                sys.exit("Numpy capture complete")

@@ -17,7 +17,7 @@ import argparse
 import os, sys, pickle
 import cv2, dlib, time
 import numpy as np
-from face_extraction import extract_face_data
+from faceextractor import FaceDataExtractor
 from PIL import Image
 from edgetpu.detection.engine import DetectionEngine
 
@@ -43,6 +43,7 @@ parser.add_argument('--input',
 args = parser.parse_args()
 
 model = DetectionEngine(args.model)
+face_ext = FaceDataExtractor()
 DESCRIPTORS = args.descriptor
 LABELS = args.label
 
@@ -72,7 +73,7 @@ for root, dirs, files in os.walk(args.input):
         if len(face_list) > 1:
             raise ValueError("More than one face found in training image")
         face = face_list[0]
-        face_data = extract_face_data(face = face, np_frame = np_img)
+        face_data = face_ext.extract_data(face = face, np_frame = np_img)
         if face_data:
             if args.v:
                 win.set_title(directory)
