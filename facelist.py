@@ -6,7 +6,7 @@ class FaceList:
     """
 
     EXPIRY = 10
-    MAX_DIST = 1.0
+    MAX_DIST = 0.75
 
     def __init__(self):
         self.faces = []

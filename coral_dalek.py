@@ -1,6 +1,6 @@
 import dlib, imutils, cv2
 import time, math, sys, pickle
-import datetime
+# import datetime
 # import numpy as np
 from faceextractor import FaceDataExtractor
 from recognizer import FaceRecognizer
@@ -55,14 +55,16 @@ print("Opening camera stream...")
 
 while True:
     try:
-        timestart = datetime.datetime.now()
+        ##timestart = datetime.datetime.now()
         cam_frame = vs.read()
+        orig = cam_frame.copy()
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
         img_frame = Image.fromarray(np_frame)
+        
         #win.set_image(np_frame)
         face_box_list = model.detect_with_image(img_frame,
-            threshold = 0.7,
+            threshold = 0.9,
             keep_aspect_ratio = True, 
             relative_coord = False, 
             top_k = 1)
@@ -70,6 +72,12 @@ while True:
         for face_box in face_box_list:
             face_data = face_ext.extract_data(face = face_box, np_frame = np_frame)
             if face_data:
+                cv2.rectangle(orig, (face_data['left_x'], face_data['left_y']), (face_data['right_x'], face_data['right_y']),(0, 255, 0), 2)
+                y = face_data['left_y'] - 15 if face_data['left_y'] - 15 > 15 else face_data['left_y'] + 15
+                text = face_data['name']
+                cv2.putText(orig, text, (face_data['left_x'], face_data['left_y']),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
                 # update face list with face_data
                 face_data['position'] = calc_position(eye_width = face_data['eye_width'],
                                                       eye_h_offset = face_data['eye_h_offset'],
@@ -79,8 +87,8 @@ while True:
             print('%s is at %.2fm and a bearing of %.2f radians with age %.0f' % (face['name'], face['position']['z_dist'], face['position']['h_angle'], face['age']))
             # win.set_image(face['face_chip_img'])
             #win.set_title("XXX")
-        timeend = datetime.datetime.now()
-        print(str(timeend-timestart))
+        #timeend = datetime.datetime.now()
+        # print(str(timeend-timestart))
 
     except KeyboardInterrupt:
         vs.stop()
