@@ -26,7 +26,7 @@ face_ext = FaceDataExtractor()
 face_list = FaceList()
 
 win = dlib.image_window()
-win.set_title("Identified Faces")
+win.set_title("Dalek Viewpoint")
 
 def pix2metre(offset, eye_width):
     # returns offset from centre in m
@@ -60,8 +60,7 @@ while True:
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
         img_frame = Image.fromarray(np_frame)
-        cv2.imshow("Dalek Viewpoint", np_frame)
-        #win.set_image(np_frame)
+        win.set_image(np_frame)
         face_box_list = model.detect_with_image(img_frame,
             threshold = 0.9,
             keep_aspect_ratio = True, 
@@ -95,6 +94,5 @@ while True:
 
     except KeyboardInterrupt:
         vs.stop()
-        cv2.destroyAllWindows()
         print("Stopped video stream")
         sys.exit(0)
