@@ -57,6 +57,7 @@ while True:
     try:
         ##timestart = datetime.datetime.now()
         cam_frame = vs.read()
+        cam_frame = imutils.resize(cam_frame)
         orig = cam_frame.copy()
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
