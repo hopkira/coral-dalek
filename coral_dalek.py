@@ -57,8 +57,6 @@ while True:
     try:
         ##timestart = datetime.datetime.now()
         cam_frame = vs.read()
-        cam_frame = imutils.resize(cam_frame)
-        orig = cam_frame.copy()
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
         img_frame = Image.fromarray(np_frame)
@@ -85,12 +83,12 @@ while True:
             startY = face['left_y']
             endX = face['right_x']
             endY = face['right_y']
-            cv2.rectangle(orig, (startX, startY), (endX, endY),(0, 255, 0), 2)
+            cv2.rectangle(cam_frame, (startX, startY), (endX, endY),(0, 255, 0), 2)
             y = startY - 15 if startY - 15 > 15 else startY + 15
             text = face['name']
-            cv2.putText(orig, text, (startX, y),
+            cv2.putText(cam_frame, text, (startX, y),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            cv2.imshow("Dalek Viewpoint", orig)
+            cv2.imshow("Dalek Viewpoint", cam_frame)
             # win.set_image(face['face_chip_img'])
             #win.set_title("XXX")
             #timeend = datetime.datetime.now()
