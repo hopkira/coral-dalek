@@ -25,9 +25,9 @@ class FaceDataExtractor:
             # return np.linalg.norm(face_encodings - face_to_compare, axis=1)
             # dlib.full_object_detection, idx:
             left_x = shape.part(0).x
-            right_x = shape.part(3).x
+            right_x = shape.part(5).x
             left_y = shape.part(0).y
-            right_y = shape.part(3).y
+            right_y = shape.part(5).y
             eye_width = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
             eye_h_offset = ((right_x + left_x) /2) - (width / 2)
             eye_v_offset = ((right_y + left_y) /2) - (height / 2)
