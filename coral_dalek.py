@@ -64,6 +64,7 @@ while True:
             keep_aspect_ratio = True, 
             relative_coord = False, 
             top_k = 1)
+        face_list.expire_faces()
         for face_box in face_box_list:
             face_data = face_ext.extract_data(face = face_box, np_frame = np_frame)
             if face_data:

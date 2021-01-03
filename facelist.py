@@ -23,7 +23,7 @@ class FaceList:
     def expire_faces(self):
         for face in self.faces:
             face['age'] += 1
-            if face['age'] > 100:
+            if face['age'] > 10:
                 self.faces.remove(face)
 
     def find_close_face(self, search_face):
@@ -49,4 +49,3 @@ class FaceList:
             self.add_face(face_dict)
         else:
             self.find_close_face(face_dict)
-        self.expire_faces()
