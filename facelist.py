@@ -16,7 +16,7 @@ class FaceList:
         # takes two positions and returns euclidean distance
         y_dist = pos2['h_offset'] - pos1['h_offset']
         x_dist = pos2['v_offset'] - pos1['v_offset']
-        z_dist = pos2['dist'] - pos1['dist']
+        z_dist = pos2['z_dist'] - pos1['z_dist']
         dist = ((x_dist**2) + (y_dist**2) + (z_dist**2)) ** 0.5
         return dist
     
