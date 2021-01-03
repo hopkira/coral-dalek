@@ -72,25 +72,30 @@ while True:
         for face_box in face_box_list:
             face_data = face_ext.extract_data(face = face_box, np_frame = np_frame)
             if face_data:
-                cv2.rectangle(orig, (face_data['left_x'], face_data['left_y']), (face_data['right_x'], face_data['right_y']),(0, 255, 0), 2)
-                y = face_data['left_y'] - 15 if face_data['left_y'] - 15 > 15 else face_data['left_y'] + 15
-                text = face_data['name']
-                cv2.putText(orig, text, (face_data['left_x'], face_data['left_y']),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
                 # update face list with face_data
                 face_data['position'] = calc_position(eye_width = face_data['eye_width'],
                                                       eye_h_offset = face_data['eye_h_offset'],
                                                       eye_v_offset = face_data['eye_v_offset'])
                 face_list.update_list(face_data)
+
         for face in face_list.faces:
             print('%s is at %.2fm and a bearing of %.2f radians with age %.0f' % (face['name'], face['position']['z_dist'], face['position']['h_angle'], face['age']))
+            startX = face['left_x']
+            startY = face['left_y']
+            endX = face['right_x']
+            endY = face['right_y']
+            cv2.rectangle(orig, (startX, startY), (endX, endY),(0, 255, 0), 2)
+            y = startY - 15 if startY - 15 > 15 else startY + 15
+            text = face['name']
+            cv2.putText(orig, text, (startX, y),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             # win.set_image(face['face_chip_img'])
             #win.set_title("XXX")
-        #timeend = datetime.datetime.now()
-        # print(str(timeend-timestart))
+            #timeend = datetime.datetime.now()
+            # print(str(timeend-timestart))
 
     except KeyboardInterrupt:
         vs.stop()
+        cv2.destroyAllWindows()
         print("Stopped video stream")
         sys.exit(0)
