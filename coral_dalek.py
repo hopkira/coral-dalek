@@ -74,8 +74,8 @@ while True:
                 face_list.update_list(face_data)
         for face in face_list.faces:
             print('%s is at %.2fm and a bearing of %.2f radians' % (face['name'], face['position']['z_dist'], face['position']['h_angle']))
-            win.set_image(face['face_chip_img'])
-            win.set_title("XXX")
+            # win.set_image(face['face_chip_img'])
+            # win.set_title("XXX")
 
     except KeyboardInterrupt:
         vs.stop()
