@@ -82,6 +82,8 @@ while True:
             startY = face['left_y']
             endX = face['right_x']
             endY = face['right_y']
+            rect = dlib.rectangle(startX, startY, endX, endY)
+            win.add_overlay(rect)
             #cv2.rectangle(cam_frame, (startX, startY), (endX, endY),(0, 255, 0), 2)
             #y = startY - 15 if startY - 15 > 15 else startY + 15
             #text = face['name']
