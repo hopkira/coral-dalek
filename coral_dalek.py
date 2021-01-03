@@ -48,8 +48,8 @@ vs = VideoStream(src=0,
                  resolution=RESOLUTION, 
                  framerate = FRAMERATE).start()
 
-print("Waiting 20 seconds for camera feed to start...")
-time.sleep(20.0) # wait for camera feed to start
+print("Waiting 5 seconds for camera feed to start...")
+time.sleep(5.0) # wait for camera feed to start
 print("Opening camera stream...")
 
 while True:
@@ -75,7 +75,7 @@ while True:
         for face in face_list.faces:
             print('%s is at %.2fm and a bearing of %.2f radians' % (face['name'], face['position']['z_dist'], face['position']['h_angle']))
             # win.set_image(face['face_chip_img'])
-            # win.set_title("XXX")
+            #win.set_title("XXX")
 
     except KeyboardInterrupt:
         vs.stop()

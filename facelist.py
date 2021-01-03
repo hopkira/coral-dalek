@@ -30,11 +30,12 @@ class FaceList:
         for face in self.faces:
             # cycle through faces and calculate Euclidean distance
             # and if within MAX_DIST then call it the same face
-            dist = self.find_face_dist(search_face['position'], face['position'])
+            search_pos = search_face['position']
+            dist = self.find_face_dist(search_pos, face['position'])
             if dist > FaceList.MAX_DIST:
                 self.add_face(search_face)
             else:
-                return None
+                face['position'] = search_pos
 
     def add_face(self, face_dict):
         # identify face and update face_dict
