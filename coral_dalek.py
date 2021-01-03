@@ -89,6 +89,7 @@ while True:
             text = face['name']
             cv2.putText(orig, text, (startX, y),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            cv2.imshow("Dalek Viewpoint", orig)
             # win.set_image(face['face_chip_img'])
             #win.set_title("XXX")
             #timeend = datetime.datetime.now()
