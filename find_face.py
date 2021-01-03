@@ -90,7 +90,6 @@ while True:
 		cv2.putText(orig, text, (startX, y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-
 	# show the output frame and wait for a key press
 	# cv2.imshow("Dalek Viewpoint", orig)
 	key = cv2.waitKey(1) & 0xFF
@@ -98,7 +97,6 @@ while True:
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
 		break
-
 
 # do a bit of cleanup
 cv2.destroyAllWindows()

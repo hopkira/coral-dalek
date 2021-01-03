@@ -9,6 +9,7 @@ class FaceDataExtractor:
 
     def extract_data(self, np_frame, face):
         width = np_frame.shape[1]
+        height = np_frame.shape[0]
         face_box = face.bounding_box.flatten().astype("int")
         (startX, startY, endX, endY) = face_box
         box = dlib.rectangle(left = startX,
@@ -28,9 +29,11 @@ class FaceDataExtractor:
             left_y = shape.part(0).y
             right_y = shape.part(3).y
             eye_width = ((((right_x - left_x )**2) + ((right_y - left_y)**2) )**0.5)
-            eye_offset = ((right_x + left_x) /2) - (width / 2)
+            eye_h_offset = ((right_x + left_x) /2) - (width / 2)
+            eye_v_offset = ((right_y + left_y) /2) - (height / 2)
             return dict(eye_width=eye_width, 
-                        eye_offset = eye_offset, 
+                        eye_h_offset = eye_h_offset,
+                        eye_v_offset = eye_v_offset, 
                         face_descriptor = face_descriptor,
                         face_chip_img = face_chip_img,
                         left_x = left_x,
