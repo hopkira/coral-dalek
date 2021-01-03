@@ -60,7 +60,7 @@ while True:
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
         img_frame = Image.fromarray(np_frame)
-        
+        cv2.imshow("Dalek Viewpoint", cam_frame)
         #win.set_image(np_frame)
         face_box_list = model.detect_with_image(img_frame,
             threshold = 0.9,
@@ -88,7 +88,6 @@ while True:
             #text = face['name']
             #cv2.putText(cam_frame, text, (startX, y),
             #    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            cv2.imshow("Dalek Viewpoint", cam_frame)
             # win.set_image(face['face_chip_img'])
             #win.set_title("XXX")
             #timeend = datetime.datetime.now()
