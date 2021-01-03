@@ -40,7 +40,7 @@ class FaceList:
         # identify face and update face_dict
         # with name etc. 
         face_dict['age'] = 0
-        face_dict['name'] = self.face_recog.recognize_face(face_dict)
+        face_dict['name'] = self.face_recog.recognize_face(face_dict['face_descriptor'])
         self.faces.append(face_dict)
 
     def update_list(self, face_dict):
