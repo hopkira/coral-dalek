@@ -25,8 +25,8 @@ model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_fac
 face_ext = FaceDataExtractor()
 face_list = FaceList()
 
-# win = dlib.image_window()
-# win.set_title("Identified Faces")
+win = dlib.image_window()
+win.set_title("Identified Faces")
 
 def pix2metre(offset, eye_width):
     # returns offset from centre in m
@@ -83,11 +83,11 @@ while True:
             startY = face['left_y']
             endX = face['right_x']
             endY = face['right_y']
-            cv2.rectangle(cam_frame, (startX, startY), (endX, endY),(0, 255, 0), 2)
-            y = startY - 15 if startY - 15 > 15 else startY + 15
-            text = face['name']
-            cv2.putText(cam_frame, text, (startX, y),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            #cv2.rectangle(cam_frame, (startX, startY), (endX, endY),(0, 255, 0), 2)
+            #y = startY - 15 if startY - 15 > 15 else startY + 15
+            #text = face['name']
+            #cv2.putText(cam_frame, text, (startX, y),
+            #    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             cv2.imshow("Dalek Viewpoint", cam_frame)
             # win.set_image(face['face_chip_img'])
             #win.set_title("XXX")
