@@ -49,3 +49,4 @@ class FaceList:
             self.add_face(face_dict)
         else:
             self.find_close_face(face_dict)
+        self.expire_faces()
