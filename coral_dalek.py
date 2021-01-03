@@ -75,7 +75,7 @@ while True:
                                                       eye_h_offset = face_data['eye_h_offset'],
                                                       eye_v_offset = face_data['eye_v_offset'])
                 face_list.update_list(face_data)
-
+        win.clear_overlay()
         for face in face_list.faces:
             print('%s is at %.2fm and a bearing of %.2f radians with age %.0f' % (face['name'], face['position']['z_dist'], face['position']['h_angle'], face['age']))
             startX = face['left_x']
