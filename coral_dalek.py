@@ -1,5 +1,6 @@
 import dlib, imutils, cv2
 import time, math, sys, pickle
+import datetime
 # import numpy as np
 from faceextractor import FaceDataExtractor
 from recognizer import FaceRecognizer
@@ -54,6 +55,7 @@ print("Opening camera stream...")
 
 while True:
     try:
+        timestart = datetime.datetime.now()
         cam_frame = vs.read()
         # frame = imutils.resize(frame, width=500)
         np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
@@ -77,6 +79,8 @@ while True:
             print('%s is at %.2fm and a bearing of %.2f radians with age %.0f' % (face['name'], face['position']['z_dist'], face['position']['h_angle'], face['age']))
             # win.set_image(face['face_chip_img'])
             #win.set_title("XXX")
+        timeend = datetime.datetime.now()
+        print(str(timeend-timestart))
 
     except KeyboardInterrupt:
         vs.stop()
