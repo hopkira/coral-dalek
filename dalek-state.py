@@ -20,10 +20,13 @@ from edgetpu.detection.engine import DetectionEngine
 from imutils.video import VideoStream
 from PIL import Image
 
+FREQUENCY = 50
+PERIOD = 1.0 / float(FREQUENCY) * 1000.0
+
 # create iris servo
 i2c_bus = busio.I2C(SCL, SDA)
 pca = PCA9685(i2c_bus)
-pca.frequency = 50
+pca.frequency = FREQUENCY
 
 # Initialise the pygame mixer for sound and sound effect
 #pygame.mixer.init()
@@ -63,11 +66,10 @@ IRIS_LIGHT = 2
 HOVER_LIGHTS = 3
 
 # Convenience Servo Values
-ON = 0xffff
-OPEN = 0x7FFF
-MID = 0x7FFF
-CLOSED = 0x7FFF
-OFF = 0x0000
+ON = 1.0
+AWAKE = True
+ASLEEP = False
+OFF = 0.0
 
 # Vales to control whether dome lights are on or off
 VOL_MIN = 300
@@ -100,19 +102,33 @@ print("Waiting 5 seconds for camera feed to start...")
 time.sleep(5.0) # wait for camera feed to start
 print("Opening camera stream...")
 
+def status(direction):
+    for x in range(0,100):
+        if direction:
+            value = float(x) / 100.0
+        else:
+            value = 1.0 - (float(x) / 100.0)
+        dalek_servo(IRIS_SERVO, value)
+        dalek_light(IRIS_LIGHT, value)
+        dalek_light(HOVER_LIGHTS, value)
+        time.sleep(3.0/100.0)
+
 def dalek_servo(channel,value):
-    value = ON * value
-    pca.channels[channel].duty_cycle = value
+    value = 0.2 + (value * 0.6) # normalise between 0.2 and 0.8
+    value = 1.0 - value # reverse value
+    value = value + 1.0 # change to range 1.2 to 1.8
+    duty_cycle = int(value / (PERIOD / 65535.0))
+    pca.channels[channel].duty_cycle = duty_cycle
+
+def dalek_light(channel,value):
+    pca.channels[channel].duty_cycle = value * 65535.0
 
 def servo_state(instr_list):
     for instr in instr_list:
         dalek_servo(instr[0],instr[1])
 
 # Initialize lights and servos
-servo_state(([IRIS_SERVO, MID],
-            [DOME_LIGHTS, OFF],
-            [IRIS_LIGHT, OFF],
-            [HOVER_LIGHTS, OFF]))
+status(ASLEEP)
 
 class Person:
     '''The Person class represents the people known to the Dalek'''
@@ -222,10 +238,7 @@ class Waiting(State):
     '''
     def __init__(self):
         print('Entering state:', str(self))
-        servo_state(([IRIS_SERVO, CLOSED],
-                    [DOME_LIGHTS, OFF],
-                    [IRIS_LIGHT, OFF],
-                    [HOVER_LIGHTS, OFF]))
+        status(ASLEEP)
 
     def run(self):
         faces = detect_faces()
@@ -248,10 +261,6 @@ class Silent(State):
 
     def __init__(self):
         print('Entering state:', str(self))
-        servo_state(([IRIS_SERVO, CLOSED],
-                    [DOME_LIGHTS, OFF],
-                    [IRIS_LIGHT, OFF],
-                    [HOVER_LIGHTS, OFF]))
 
     def run(self):
         time.sleep(0.1)
@@ -270,13 +279,7 @@ class WakingUp(State):
 
     def __init__(self):
         print('Entering state:', str(self))
-        servo_state(([DOME_LIGHTS, OFF],
-                    [IRIS_LIGHT, ON],
-                    [HOVER_LIGHTS, ON]))
-        #pygame.mixer.music.play()
-        for iris in range(CLOSED,  OPEN):
-            dalek_servo(IRIS_SERVO,iris)
-            time.sleep(0.0001)
+        status(AWAKE)
 
     def run(self):
         dalek.on_event('dalek_awake')
@@ -295,10 +298,6 @@ class Awake(State):
     def __init__(self):
         print('Entering state:', str(self))
         self.now = round(time.time())
-        servo_state(([DOME_LIGHTS, OFF],
-                    [IRIS_LIGHT, ON],
-                    [HOVER_LIGHTS, ON],
-                    [IRIS_SERVO, OPEN]))
 
     def run(self):
         countdown = DEAD_TIME + self.now - round(time.time())
@@ -332,10 +331,6 @@ class Greeting(State):
     '''
 
     def run(self):
-        servo_state(([DOME_LIGHTS, OFF],
-                    [IRIS_LIGHT, ON],
-                    [HOVER_LIGHTS, ON],
-                    [IRIS_SERVO, OPEN]))
         dalek.on_event('greet_done')
 
     def on_event(self, event):
@@ -353,10 +348,6 @@ class Exterminating(State):
         print('Entering state:', str(self))
         self.now = round(time.time())
         self.unknown_count = 0
-        servo_state(([DOME_LIGHTS, OFF],
-                    [IRIS_LIGHT, ON],
-                    [HOVER_LIGHTS, ON],
-                    [IRIS_SERVO, OPEN]))
 
     def run(self):
         countdown = DEAD_TIME + self.now - round(time.time())
@@ -408,12 +399,7 @@ class FallingAsleep(State):
 
     def __init__(self):
         print('Entering state:', str(self))
-        servo_state(([DOME_LIGHTS, OFF],
-                    [IRIS_LIGHT, OFF],
-                    [HOVER_LIGHTS, OFF]))
-        for iris in range(OPEN, CLOSED):
-            dalek_servo(IRIS_SERVO, iris)
-            time.sleep(0.0001)
+        status(ASLEEP)
 
     def run(self):
         dalek.on_event('asleep')
@@ -589,11 +575,6 @@ stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
               frames_per_buffer=CHUNK, input_device_index=2)
 domeLightsThread = Thread(target=flash_dome_lights, daemon=True)
 domeLightsThread.start()
-
-servo_state(([DOME_LIGHTS, OFF],
-            [IRIS_LIGHT, OFF],
-            [HOVER_LIGHTS, OFF],
-            [IRIS_SERVO, CLOSED]))
 
 dalek = Dalek()
 
