@@ -12,7 +12,7 @@ import board
 from board import SCL, SDA
 import busio
 from adafruit_pca9685 import PCA9685
-from adafruit_motor import servo
+#from adafruit_motor import servo
 import dlib
 from faceextractor import FaceDataExtractor
 from recognizer import FaceRecognizer
@@ -488,7 +488,7 @@ def recognise_faces():
         threshold = 0.7,
         keep_aspect_ratio = True, 
         relative_coord = False, 
-        top_k = 1)
+        top_k = 3)
     face_names = []
     face_box_list = detect_faces()
     for face_box in face_box_list:
@@ -565,7 +565,7 @@ def dalek_greeting(name):
 
 
 # Sets up a daemon thread to flash lights in line with sound
-def flashDomeLights():
+def flash_dome_lights():
     ''' Daemon thread to flash lights based on microphone noise '''
 
     while True:
@@ -587,7 +587,7 @@ def flashDomeLights():
 p = pyaudio.PyAudio()
 stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
               frames_per_buffer=CHUNK, input_device_index=2)
-domeLightsThread = Thread(target=flashDomeLights, daemon=True)
+domeLightsThread = Thread(target=flash_dome_lights, daemon=True)
 domeLightsThread.start()
 
 servo_state(([DOME_LIGHTS, OFF],
