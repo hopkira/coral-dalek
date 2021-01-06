@@ -28,4 +28,4 @@ def servo_state(instr_list):
     for instr in instr_list:
         dalek_servo(instr[0],instr[1])
 
-servo_state(([IRIS_SERVO, MID]))
+servo_state((IRIS_SERVO, MID))
