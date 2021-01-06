@@ -11,7 +11,7 @@ IRIS_LIGHT = 2
 HOVER_LIGHTS = 3
 
 FREQUENCY = 50
-PERIOD = 1.0 / FREQUENCY * 1000.0
+PERIOD = 1.0 / float(FREQUENCY) * 1000.0
 
 # create iris servo
 i2c_bus = busio.I2C(SCL, SDA)
@@ -27,7 +27,7 @@ OFF = 0.0
 
 def dalek_servo(channel,value):
     print("Channel: " + str(channel))
-    value =+ 1
+    value = value + 1.0
     print("Value: " + str(value))
     duty_cycle = int(value / PERIOD / 65535.0)
     print("Duty Cycle: " + str(duty_cycle))
