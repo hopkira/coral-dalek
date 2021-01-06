@@ -29,3 +29,7 @@ def dalek_servo(channel,value):
     value =+ 1
     duty_cycle = int(value / PERIOD / 65535.0)
     pca.channels[channel].duty_cycle = duty_cycle
+
+while True:
+    value = float(input("Value 0.0 to 1.0 - "))
+    dalek_servo(IRIS_SERVO,value)
