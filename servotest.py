@@ -26,8 +26,11 @@ CLOSED = 0.0
 OFF = 0.0
 
 def dalek_servo(channel,value):
+    print("Channel: " + channel)
     value =+ 1
+    print("Value: " + str(value))
     duty_cycle = int(value / PERIOD / 65535.0)
+    print("Duty Cycle: " + str(duty_cycle))
     pca.channels[channel].duty_cycle = duty_cycle
 
 while True:
