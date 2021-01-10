@@ -8,9 +8,10 @@ recognise them.  It assumes:
     * the use of an Adafruit Servo Controller to control an iris servo
       and the lights within the eye and dome (using a TIP120 transistor to amplify the PWM signal)
     * a Pi High Quality camera with 6mm lens
-    * a Google Coral TPU to provide face detection function
+    * a Google Coral TPU to provide acceleration for the face detection function
     * a database of face descriptors and labels as created by the training.py program
       (so be sure to run that program first!)
+    * a USB microphone and an amplifier for the dalek voice
 
 The Dalek operator can also optionally activate and deactivate the Dalek via an MQTT message
 over Bluetooth BLE; this assumes that there is a localhost MQTT server
@@ -76,7 +77,7 @@ THRESHOLD = 3
 UNKNOWN_THRESHOLD = 5  # numer of unknown events to hit threshold
 UNKNOWN_GAP = 30  # maximum time window in seconds for valid uknown events
 SAMPLES = 8  # number of training photos per person (limit 50 in total)
-CHUNK = 2**11  # buffer size for audio capture and analysis
+CHUNK = 2**13  # buffer size for audio capture and analysis
 RATE = 44100  # recording rate in Hz
 MAX = 10000  # minimum volume level for dome lights to illuminate
 
@@ -105,13 +106,13 @@ ON = 1.0
 AWAKE = True
 ASLEEP = False
 OFF = 0.0
-STEPS = 1000
-DURATION = 3.0
+STEPS = 100
+DURATION = 1.0
 SERVO_MAX = 0.8
 SERVO_MIN = 0.2
 
 # Vales to control whether dome lights are on or off
-VOL_MIN = 300
+VOL_MIN = 5000
 VOL_MAX = 20000
 
 HEIGHT = 1080 # pixels
@@ -141,7 +142,7 @@ print("Waiting 5 seconds for camera feed to start...")
 time.sleep(5.0) # wait for camera feed to start
 print("Opening camera stream...")
 
-def status(direction):
+def dalek_status(direction):
     """
     Opens or closes the dalek eye and lights
 
@@ -187,8 +188,6 @@ def dalek_light(channel,value):
     """
     pca.channels[channel].duty_cycle = int(value * 65535.0)
 
-# Initialize lights and servos
-status(ASLEEP)
 
 class Person:
     '''The Person class represents the people known to the Dalek'''
@@ -214,7 +213,7 @@ class Person:
             records a sighting of the person by the robot
         '''
         self.name = name
-        self.detection_events = 0  #  number of detection events at init is zer
+        self.detection_events = 0  #  number of detection events at init is zero
         self.detected = 0  #  time of last know detection event
         self.last_seen = 0  #  time of last announcement
         self.now = 0
@@ -310,7 +309,6 @@ class Waiting(State):
     '''
     def __init__(self):
         super(Waiting, self).__init__()
-        status(ASLEEP)
 
     def run(self):
         faces = detect_faces()
@@ -351,7 +349,7 @@ class WakingUp(State):
 
     def __init__(self):
         super(WakingUp, self).__init__()
-        status(AWAKE)
+        dalek_status(AWAKE)
 
     def run(self):
         dalek.on_event('dalek_awake')
@@ -378,14 +376,14 @@ class Awake(State):
         else:
             print("Countdown timer:" + str(countdown))
         face_names = recognise_faces()
-        print(len(face_names))
         if len(face_names) > 0:
             self.now = round(time.time())
-            for face in face_names:
-                if face == "Unknown":
+            for name in face_names:
+                if name == "Unknown":
                     dalek.on_event("exterminate")
                 else:
-                    dalek.on_event("greet")
+                    dalek_greeting(name)
+            dalek.on_event("greet")
 
     def on_event(self, event):
         if event == 'timeout':
@@ -426,7 +424,7 @@ class Exterminating(State):
         if countdown <= 0:
             dalek.on_event('timeout')
         else:
-            print(countdown)
+            print("Countdown: " + str(countdown))
         face_names = recognise_faces()
         if len(face_names) > 0:
             self.now = round(time.time())
@@ -471,7 +469,7 @@ class FallingAsleep(State):
 
     def __init__(self):
         super(FallingAsleep, self).__init__()
-        status(ASLEEP)
+        dalek_status(ASLEEP)
 
     def run(self):
         dalek.on_event('asleep')
@@ -496,6 +494,9 @@ class Dalek(object):
         ''' Initialise the Dalek in its Waiting state. '''
 
         # Start with a default state.
+        dalek_status(AWAKE)
+        dalek_speak("I am Darlek Fry!")
+        dalek_status(ASLEEP)
         self.state = Waiting()
 
     def run(self):
@@ -552,8 +553,13 @@ def recognise_faces():
     for face_box in face_box_list:
         face_data = face_ext.extract_data(face = face_box, np_frame = np_frame)
         if face_data:
-            face_box = face_box.flatten().astype("int")
-            shape = shape_pred(np_frame, face_box)
+            face_box = face_box.bounding_box.flatten().astype("int")
+            (start_x, start_y, end_x, end_y) = face_box
+            box = dlib.rectangle(left = start_x,
+                                right = end_x,
+                                top = start_y,
+                                bottom = end_y)
+            shape = shape_pred(np_frame, box)
             if shape:
                 face_chip_img = dlib.get_face_chip(np_frame, shape)
                 face_descriptor = facerec.compute_face_descriptor(face_chip_img)
@@ -630,16 +636,16 @@ def flash_dome_lights():
 
     while True:
         try:
-            data = np.frombuffer(stream.read(CHUNK),dtype=np.int16)
+            data = np.frombuffer(stream.read(CHUNK, False),dtype=np.int16)
             vol = abs(int(np.average(np.abs(data))))
             if vol > VOL_MIN:
                 vol = vol - VOL_MIN
             else:
                 vol = 0
-            vol = vol * ON/VOL_MAX
+            vol = vol * ON / VOL_MAX
             if vol > ON:
                 vol =  ON
-            dalek_servo(IRIS_SERVO, abs(int(vol / ON)))
+            dalek_light(DOME_LIGHTS, vol / ON)
         except ValueError:
             print ("Volume out of range: " + vol)
 
@@ -682,6 +688,7 @@ client.subscribe("/ble/advertise/d3:fe:97:d2:d1:9e/espruino/#")
 try:
     while True:
         dalek.run()
+        time.sleep(0.1)
         client.loop(0.1)
 except KeyboardInterrupt:
     pca.deinit()
