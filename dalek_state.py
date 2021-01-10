@@ -1,24 +1,60 @@
 #!/usr/bin/env python3
+"""Dalek State Machine
+
+This module provides a state machine that enables a Dalek to recognise people within
+its field of view and either welcome them by name, or threaten them if it doesn't
+recognise them.  It assumes:
+
+    * the use of an Adafruit Servo Controller to control an iris servo
+      and the lights within the eye and dome (using a TIP120 transistor to amplify the PWM signal)
+    * a Pi High Quality camera with 6mm lens
+    * a Google Coral TPU to provide face detection function
+    * a database of face descriptors and labels as created by the training.py program
+      (so be sure to run that program first!)
+
+The Dalek operator can also optionally activate and deactivate the Dalek via an MQTT message
+over Bluetooth BLE; this assumes that there is a localhost MQTT server
+
+Example:
+    $ python3 dalek_state.py
+
+Todo:
+    * Add in the hover lights on an additional servo channel
+    * Use the location and eye distance of the detected face to calculate distance and
+      bearing so the dome can swivel to look directly at the persons being talked to
+
+Userful blog posts for setup: https://k9-build.blogspot.com/search/label/dalek
+
+Dalek and K9 word marks and logos are trade marks of the British Broadcasting Corporation and
+are copyright BBC/Terry Nation 1963
+
+"""
 import os
-import cv2
-import numpy as np
 import time
 import random
-# import pygame
-import pyaudio
-import paho.mqtt.client as mqtt
 from threading import Thread
-import board
+
+# import servo board
 from board import SCL, SDA
 import busio
 from adafruit_pca9685 import PCA9685
-#from adafruit_motor import servo
+
+# import image and DL processing
+import cv2
+import numpy as np
 import dlib
-from faceextractor import FaceDataExtractor
-from recognizer import FaceRecognizer
 from edgetpu.detection.engine import DetectionEngine
 from imutils.video import VideoStream
 from PIL import Image
+
+# import audio and messaging
+import pyaudio
+import paho.mqtt.client as mqtt
+
+# import local helper classes
+from faceextractor import FaceDataExtractor
+from recognizer import FaceRecognizer
+
 
 FREQUENCY = 50
 PERIOD = 1.0 / float(FREQUENCY) * 1000.0
@@ -60,16 +96,19 @@ SOX_PITCH_DEFAULT = 0
 SOX_PITCH_DOWN = -25
 
 # Servo Channels
-IRIS_SERVO = 0
-DOME_LIGHTS = 1
-IRIS_LIGHT = 2
-HOVER_LIGHTS = 3
+IRIS_SERVO = 4
+DOME_LIGHTS = 0
+IRIS_LIGHT = 1
 
 # Convenience Servo Values
 ON = 1.0
 AWAKE = True
 ASLEEP = False
 OFF = 0.0
+STEPS = 1000
+DURATION = 3.0
+SERVO_MAX = 0.8
+SERVO_MIN = 0.2
 
 # Vales to control whether dome lights are on or off
 VOL_MIN = 300
@@ -84,18 +123,18 @@ unknown_count = 0  # number of times an unknown face has been seen
 unknown_seen = round(time.time())
 
 print("Loading face detection engine...")
-model = DetectionEngine("/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
+model = DetectionEngine("/usr/share/edgetpu/examples/models/"
+                        "ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 print("Loading face landmark detection engine...")
 shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
 face_ext = FaceDataExtractor()
 print("Loading face recognition engine...")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 face_recog = FaceRecognizer()
-
 print("Starting video stream...")
-vs = VideoStream(src=0, 
-                 usePiCamera = True, 
-                 resolution=RESOLUTION, 
+vs = VideoStream(src=0,
+                 usePiCamera = True,
+                 resolution=RESOLUTION,
                  framerate = FRAMERATE).start()
 
 print("Waiting 5 seconds for camera feed to start...")
@@ -103,29 +142,50 @@ time.sleep(5.0) # wait for camera feed to start
 print("Opening camera stream...")
 
 def status(direction):
-    for x in range(0,100):
+    """
+    Opens or closes the dalek eye and lights
+
+    Arg:
+        direction (boolean): True to open, False to close
+    """
+    dalek_servo(IRIS_SERVO, 1-direction)
+    dalek_light(IRIS_LIGHT, 1-direction)
+    for pos in range(0, STEPS):
         if direction:
-            value = float(x) / 100.0
+            value = (float(pos) / float(STEPS))**4
         else:
-            value = 1.0 - (float(x) / 100.0)
+            value = (1.0 - (float(pos) / float(STEPS)))**4
         dalek_servo(IRIS_SERVO, value)
         dalek_light(IRIS_LIGHT, value)
-        dalek_light(HOVER_LIGHTS, value)
-        time.sleep(3.0/100.0)
+        time.sleep(DURATION/STEPS)
+    dalek_servo(IRIS_SERVO, direction)
+    dalek_light(IRIS_LIGHT, direction)
 
 def dalek_servo(channel,value):
-    value = 0.2 + (value * 0.6) # normalise between 0.2 and 0.8
+    """
+    Changes the servo position of a servo on the Adafruit controller.
+    Maximum and minumum safe positions are pre-calculated.
+
+    Args:
+        channel (int): the channel number of the servo (range 0-16)
+        value (float): value between 0.0 and 1.0
+    """
+    value = SERVO_MIN + (value * (SERVO_MAX - SERVO_MIN)) # normalise between MAX and MIN
     value = 1.0 - value # reverse value
     value = value + 1.0 # change to range 1.2 to 1.8
     duty_cycle = int(value / (PERIOD / 65535.0))
     pca.channels[channel].duty_cycle = duty_cycle
 
 def dalek_light(channel,value):
-    pca.channels[channel].duty_cycle = value * 65535.0
+    """
+    Changes the level of illumination of a light attached to the
+    PWM output of the servo controller.
 
-def servo_state(instr_list):
-    for instr in instr_list:
-        dalek_servo(instr[0],instr[1])
+    Args:
+        channel (int): the channel number of the servo (range 0-16)
+        value (float): value between 0.0 and 1.0
+    """
+    pca.channels[channel].duty_cycle = int(value * 65535.0)
 
 # Initialize lights and servos
 status(ASLEEP)
@@ -157,6 +217,9 @@ class Person:
         self.detection_events = 0  #  number of detection events at init is zer
         self.detected = 0  #  time of last know detection event
         self.last_seen = 0  #  time of last announcement
+        self.now = 0
+        self.duration = 0
+        self.gap = 0
 
     def just_seen(self):
         '''Record sighting of person'''
@@ -164,14 +227,18 @@ class Person:
         self.now = round(time.time())  # record the time of the detection event
         self.duration = self.now - self.last_seen # work out how long since last greeting
         print("Just seen " + str(self.name) + " after " + str(self.duration) + "s")
-        if (self.duration > DEAD_TIME):  # tests if an announcment is allowed
+        if self.duration > DEAD_TIME:  # tests if an announcment is allowed
             self.gap = self.now - self.detected  # gap = how long since last sighting
             self.detected = self.now  # record the time of the sighting
             self.detection_events += 1  # increment the sightings counter
-            print("Seen " + str(self.name) + " " + str(self.detection_events) + " times.  Last time " + str(self.gap) + "s ago")
-            if (self.gap < EVENT_GAP):  # is the gap shorter than the allowed gap?
-                if (self.detection_events >= THRESHOLD):  # has the threshold been met?
-                    print("I have seen " + self.name + " too many times for it to be a false postive.")
+            print("Seen " + str(self.name) +
+                  " " + str(self.detection_events) +
+                  " times.  Last time " + str(self.gap) +
+                  "s ago")
+            if self.gap < EVENT_GAP:  # is the gap shorter than the allowed gap?
+                if self.detection_events >= THRESHOLD:  # has the threshold been met?
+                    print("I have seen " + self.name +
+                          " too many times for it to be a false postive.")
                     # as we are outside the dead time and the threshold has
                     # been met, then we make an annoucement by
                     # upadating the Cloudant db with the current time,
@@ -182,13 +249,19 @@ class Person:
                     dalek_greeting(self.name)
                     dalek.on_event("greet")
                 else:
-                    print("Back to watching, detection events for " + str(self.name) + " stands at " + str(self.detection_events))
+                    print("Back to watching, detection events for " +
+                          str(self.name) +
+                          " stands at " +
+                          str(self.detection_events))
                     return
             else:
                 # as the event is outside the window, but a sighting
                 # has happened then reset the counter to 1
                 self.detection_events = 1
-                print("Reset counter. Detection events for " + str(self.name) + " is set to " + str(self.detection_events))
+                print("Reset counter. Detection events for " +
+                      str(self.name) +
+                      " is set to " +
+                      str(self.detection_events))
                 return
         else:
             print("I've seen " + str(self.name) + ", but recently shouted at them.")
@@ -208,7 +281,6 @@ class State(object):
         Incoming events processing is delegated to the child State
         to define and enable the valid state transitions.
         '''
-        pass
 
     def run(self):
         '''
@@ -237,7 +309,7 @@ class Waiting(State):
     The child state where the Dalek is scanning for faces, but appears dormant
     '''
     def __init__(self):
-        print('Entering state:', str(self))
+        super(Waiting, self).__init__()
         status(ASLEEP)
 
     def run(self):
@@ -260,7 +332,7 @@ class Silent(State):
     '''
 
     def __init__(self):
-        print('Entering state:', str(self))
+        super(Silent, self).__init__()
 
     def run(self):
         time.sleep(0.1)
@@ -278,7 +350,7 @@ class WakingUp(State):
     '''
 
     def __init__(self):
-        print('Entering state:', str(self))
+        super(WakingUp, self).__init__()
         status(AWAKE)
 
     def run(self):
@@ -296,7 +368,7 @@ class Awake(State):
     '''
 
     def __init__(self):
-        print('Entering state:', str(self))
+        super(Awake, self).__init__()
         self.now = round(time.time())
 
     def run(self):
@@ -345,7 +417,7 @@ class Exterminating(State):
     '''
 
     def __init__(self):
-        print('Entering state:', str(self))
+        super(Exterminating, self).__init__()
         self.now = round(time.time())
         self.unknown_count = 0
 
@@ -364,7 +436,7 @@ class Exterminating(State):
                 else:
                     self.unknown_count = 0
                     dalek.on_event("known_face")
-        if (self.unknown_count < UNKNOWN_THRESHOLD):
+        if self.unknown_count < UNKNOWN_THRESHOLD:
             print("Exterminating: unknown count - " + str(unknown_count))
         else:
             warning = ("You are|>unrecognized. Do not|>move!",
@@ -398,7 +470,7 @@ class FallingAsleep(State):
     '''
 
     def __init__(self):
-        print('Entering state:', str(self))
+        super(FallingAsleep, self).__init__()
         status(ASLEEP)
 
     def run(self):
@@ -455,8 +527,8 @@ def detect_faces():
     img_frame = Image.fromarray(np_frame)
     face_box_list = model.detect_with_image(img_frame,
         threshold = 0.9,
-        keep_aspect_ratio = True, 
-        relative_coord = False, 
+        keep_aspect_ratio = True,
+        relative_coord = False,
         top_k = 1)
     return face_box_list
 
@@ -472,8 +544,8 @@ def recognise_faces():
     img_frame = Image.fromarray(np_frame)
     face_box_list = model.detect_with_image(img_frame,
         threshold = 0.7,
-        keep_aspect_ratio = True, 
-        relative_coord = False, 
+        keep_aspect_ratio = True,
+        relative_coord = False,
         top_k = 3)
     face_names = []
     face_box_list = detect_faces()
@@ -521,7 +593,9 @@ def dalek_speak(speech):
                 sox_vol = SOX_VOL_DEFAULT
                 sox_pitch = SOX_PITCH_DEFAULT
             print(clause)
-            cmd = "espeak -v en-rp '%s' -p %s -s %s -a %s -z --stdout|play -v %s - synth sine fmod 25 pitch %s" % (clause, pitch, speed, amplitude, sox_vol, sox_pitch)
+            cmd = ("espeak -v en-rp '%s' -p %s -s %s -a %s -z "
+                   "--stdout|play -v %s - synth sine fmod 25 pitch %s" %
+                   (clause, pitch, speed, amplitude, sox_vol, sox_pitch))
             os.system(cmd)
 
 
@@ -583,7 +657,11 @@ client = mqtt.Client("dalek-python")
 client.connect("localhost")
 
 # client.publish("test/message","did you get this?")
-def on_message(client, userdata, message):
+def on_message(message):
+    """
+    Enables the Dalek to receive a message from an Epruino Watch via
+    MQTT over Bluetooth (BLE) to place it into active or inactive States
+    """
     global last_message
     payload = str(message.payload.decode("utf-8"))
     if payload != last_message:

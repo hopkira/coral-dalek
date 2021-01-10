@@ -14,14 +14,16 @@ python3 training.py \
 """
 
 import argparse
-import os, sys, pickle
-import cv2, dlib, time
+import os
+import sys
+import time
+import pickle
+import cv2
+import dlib
 import numpy as np
-from faceextractor import FaceDataExtractor
 from PIL import Image
 from edgetpu.detection.engine import DetectionEngine
-
-initialize = False
+from faceextractor import FaceDataExtractor
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-v',
@@ -30,11 +32,11 @@ parser.add_argument('-v',
 parser.add_argument('--model',
     help='Full path to mobilenet tflite model',
     default = "/usr/share/edgetpu/examples/models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
-parser.add_argument('--label', 
+parser.add_argument('--label',
     help='Label file path.',
     default = "./labels.pickle")
-parser.add_argument('--descriptor', 
-    help='Descriptor file path.', 
+parser.add_argument('--descriptor',
+    help='Descriptor file path.',
     default = "./face_descriptors.npy")
 parser.add_argument('--input',
     help='Training image path.',
@@ -46,13 +48,10 @@ model = DetectionEngine(args.model)
 face_ext = FaceDataExtractor()
 DESCRIPTORS = args.descriptor
 LABELS = args.label
+initialize = False
 
 if args.v:
     win = dlib.image_window()
-
-def save_descriptor(descriptor, label):
-
-    return True
 
 for root, dirs, files in os.walk(args.input):
     for file_name in files:
@@ -60,13 +59,14 @@ for root, dirs, files in os.walk(args.input):
         # file_name = str(num)+'.png'
         train_filename = os.path.join(root,file_name)
         directory = root.split(os.path.sep)[-1]
+        print(train_filename)
         np_img = cv2.imread(train_filename, cv2.IMREAD_COLOR)
         np_img = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(np_img)
         face_list = model.detect_with_image(img,
             threshold=0.7,
-            keep_aspect_ratio=True, 
-            relative_coord=False, 
+            keep_aspect_ratio=True,
+            relative_coord=False,
             top_k=1)
         if len(face_list) < 1:
             sys.exit("Face not found in training image")
@@ -78,6 +78,7 @@ for root, dirs, files in os.walk(args.input):
             if args.v:
                 win.set_title(directory)
                 win.set_image(face_data['face_chip_img'])
+                time.sleep(5.0)
             try:
                 # deserialize descriptors and labels from disk
                 descriptors = np.load(DESCRIPTORS)
