@@ -1,6 +1,7 @@
 import pyaudio
 from threading import Thread
 import time
+import numpy as np
 
 # Vales to control whether dome lights are on or off
 VOL_MIN = 5000
