@@ -7,6 +7,7 @@ VOL_MAX = 20000
 RATE = 44100  # recording rate in Hz
 MAX = 10000  # minimum volume level for dome lights to illuminate
 ON = 1.0
+CHUNK = 2**13  # buffer size for audio capture and analysis
 
 # Sets up a daemon thread to flash lights in line with sound
 def flash_dome_lights():
