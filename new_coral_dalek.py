@@ -658,7 +658,7 @@ def flash_dome_lights():
 # start the background thread to flash the Dome Lights
 p = pyaudio.PyAudio()
 stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
-              frames_per_buffer=CHUNK, input_device_index=2)
+              frames_per_buffer=CHUNK, input_device_index=1)
 domeLightsThread = Thread(target=flash_dome_lights, daemon=True)
 domeLightsThread.start()
 
