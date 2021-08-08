@@ -19,6 +19,8 @@ CHUNK = 2**13  # buffer size for audio capture and analysis
 FREQUENCY = 50
 PERIOD = 1.0 / float(FREQUENCY) * 1000.0
 
+DOME_LIGHTS = 0
+
 # create iris servo
 i2c_bus = busio.I2C(SCL, SDA)
 pca = PCA9685(i2c_bus)
