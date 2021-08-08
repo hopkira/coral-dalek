@@ -4,6 +4,9 @@ import threading
 # Vales to control whether dome lights are on or off
 VOL_MIN = 5000
 VOL_MAX = 20000
+RATE = 44100  # recording rate in Hz
+MAX = 10000  # minimum volume level for dome lights to illuminate
+ON = 1.0
 
 # Sets up a daemon thread to flash lights in line with sound
 def flash_dome_lights():
