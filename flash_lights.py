@@ -9,7 +9,7 @@ import busio
 from adafruit_pca9685 import PCA9685
 
 # Vales to control whether dome lights are on or off
-VOL_MIN = 80
+VOL_MIN = 200
 VOL_MAX = 2250
 RATE = 44100  # recording rate in Hz
 MAX = 400  # minimum volume level for dome lights to illuminate
@@ -48,13 +48,10 @@ def flash_dome_lights():
             vol = abs(int(np.average(np.abs(data))))
             print(vol)
             if vol > VOL_MIN:
-                vol = vol - VOL_MIN
+                vol = min(1.0, vol/VOL_MAX)
+                dalek_light(DOME_LIGHTS, vol)
             else:
-                vol = 0
-            vol = vol * ON / VOL_MAX
-            if vol > ON:
-                vol =  ON
-            dalek_light(DOME_LIGHTS, vol / ON)
+                dalek_light(DOME_LIGHTS, 0)
         except ValueError:
             print ("Volume out of range: " + vol)
 
