@@ -1,5 +1,5 @@
 import dlib
-from edgetpu.detection.engine import DetectionEngine
+# from edgetpu.detection.engine import DetectionEngine
 
 class FaceDataExtractor:
 
@@ -10,7 +10,7 @@ class FaceDataExtractor:
     def extract_data(self, np_frame, face):
         width = np_frame.shape[1]
         height = np_frame.shape[0]
-        face_box = face.bounding_box.flatten().astype("int")
+        face_box = face.BBox.flatten().astype("int") # changed to BBox object
         (startX, startY, endX, endY) = face_box
         box = dlib.rectangle(left = startX,
                             right = endX,
