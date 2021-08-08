@@ -531,9 +531,8 @@ def detect_faces():
     '''
     cam_frame = vs.read()
     np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
-    img_frame = Image.fromarray(np_frame)
+    image = Image.fromarray(np_frame)
     
-    image = Image.open(“image filename”)
     _, scale = common.set_resized_input(
         interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
 
