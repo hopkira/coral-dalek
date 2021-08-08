@@ -119,7 +119,7 @@ SERVO_MAX = 0.8
 SERVO_MIN = 0.2
 
 # Vales to control whether dome lights are on or off
-VOL_MIN = 400
+VOL_MIN = 500
 VOL_MAX = 8000
 
 HEIGHT = 1080 # pixels
