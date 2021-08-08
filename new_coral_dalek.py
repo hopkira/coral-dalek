@@ -129,7 +129,7 @@ unknown_seen = round(time.time())
 
 print("Loading face detection engine...")
 
-interpreter = make_interpreter(“/home/pi/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite”)
+interpreter = make_interpreter("/home/pi/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 interpreter.allocate_tensors()
 #model = DetectionEngine("/usr/share/edgetpu/examples/models/"
 #                        "ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
