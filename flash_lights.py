@@ -1,5 +1,6 @@
 import pyaudio
 from threading import Thread
+import time
 
 # Vales to control whether dome lights are on or off
 VOL_MIN = 5000
@@ -39,7 +40,7 @@ print("Audio thread started...")
 
 try:
     while True:
-        time.sleep(0.1)
+        time.sleep(0.01)
 except KeyboardInterrupt:
     stream.stop_stream()
     stream.close()
