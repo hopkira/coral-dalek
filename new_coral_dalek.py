@@ -106,11 +106,14 @@ DOME_LIGHTS = 0
 IRIS_LIGHT = 1
 
 # Convenience Servo Values
-
+ON = 1.0
 AWAKE = True
 ASLEEP = False
 OFF = 0.0
 STEPS = 100
+DURATION = 1.0
+SERVO_MAX = 0.8
+SERVO_MIN = 0.2
 
 SERVO_MAX = 0.8
 SERVO_MIN = 0.2
