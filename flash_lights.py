@@ -3,6 +3,11 @@ from threading import Thread
 import time
 import numpy as np
 
+# import servo board
+from board import SCL, SDA
+import busio
+from adafruit_pca9685 import PCA9685
+
 # Vales to control whether dome lights are on or off
 VOL_MIN = 5000
 VOL_MAX = 20000
@@ -11,7 +16,27 @@ MAX = 10000  # minimum volume level for dome lights to illuminate
 ON = 1.0
 CHUNK = 2**13  # buffer size for audio capture and analysis
 
+FREQUENCY = 50
+PERIOD = 1.0 / float(FREQUENCY) * 1000.0
+
+# create iris servo
+i2c_bus = busio.I2C(SCL, SDA)
+pca = PCA9685(i2c_bus)
+pca.frequency = FREQUENCY
+
 # Sets up a daemon thread to flash lights in line with sound
+
+def dalek_light(channel,value):
+    """
+    Changes the level of illumination of a light attached to the
+    PWM output of the servo controller.
+
+    Args:
+        channel (int): the channel number of the servo (range 0-16)
+        value (float): value between 0.0 and 1.0
+    """
+    pca.channels[channel].duty_cycle = int(value * 65535.0)
+
 def flash_dome_lights():
     ''' Daemon thread to flash lights based on microphone noise '''
 
