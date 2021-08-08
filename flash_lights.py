@@ -9,8 +9,8 @@ import busio
 from adafruit_pca9685 import PCA9685
 
 # Vales to control whether dome lights are on or off
-VOL_MIN = 5000
-VOL_MAX = 20000
+VOL_MIN = 500
+VOL_MAX = 10000
 RATE = 44100  # recording rate in Hz
 MAX = 10000  # minimum volume level for dome lights to illuminate
 ON = 1.0
