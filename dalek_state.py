@@ -112,8 +112,8 @@ SERVO_MAX = 0.8
 SERVO_MIN = 0.2
 
 # Vales to control whether dome lights are on or off
-VOL_MIN = 5000
-VOL_MAX = 20000
+VOL_MIN = 400
+VOL_MAX = 8000
 
 HEIGHT = 1080 # pixels
 WIDTH = 1920 # pixels
@@ -638,14 +638,12 @@ def flash_dome_lights():
         try:
             data = np.frombuffer(stream.read(CHUNK, False),dtype=np.int16)
             vol = abs(int(np.average(np.abs(data))))
+            print(vol)
             if vol > VOL_MIN:
-                vol = vol - VOL_MIN
+                vol = min(1.0, vol/VOL_MAX)
+                dalek_light(DOME_LIGHTS, vol)
             else:
-                vol = 0
-            vol = vol * ON / VOL_MAX
-            if vol > ON:
-                vol =  ON
-            dalek_light(DOME_LIGHTS, vol / ON)
+                dalek_light(DOME_LIGHTS, 0)
         except ValueError:
             print ("Volume out of range: " + vol)
 
