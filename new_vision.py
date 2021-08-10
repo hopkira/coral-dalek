@@ -46,11 +46,12 @@ while True:
     face_box_list = detect.get_objects(interpreter, 0.7, scale)
 
     if len(face_box_list) > 0:
+        draw = ImageDraw.Draw(image)
         for face in face_box_list:
             bbox = face.bbox
             draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)],
                    outline='white')
+                   
+    displayImage = np.asarray(image)
+    cv2.imshow('Coral Live Object Detection', displayImage)
     
-    screen_image = image.convert('RGB')
-    ImageDraw.Draw(screen_image)
-    image.show()
