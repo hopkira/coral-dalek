@@ -35,7 +35,7 @@ print("Camera stream open...")
 while True:
     cam_frame = vs.read()
     # np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
-    image = Image.fromarray(cam_frame)
+    # image = Image.fromarray(cam_frame)
     
     #_, scale = common.set_resized_input(
     #    interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
@@ -50,5 +50,5 @@ while True:
     #    bbox = face.bbox
     #    draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='white')
 
-    displayImage = np.asarray(image)
-    cv2.imshow('Object Detection', displayImage)
+    # displayImage = np.asarray(image)
+    cv2.imshow('Object Detection', cam_frame)
