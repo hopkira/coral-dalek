@@ -33,7 +33,7 @@ time.sleep(1.0) # wait for camera feed to start
 print("Camera stream open...")
 
 while True:
-    cam_frame = vs.read()
+    ret, cam_frame = vs.read()
     # np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
     image = Image.fromarray(cam_frame)
     
