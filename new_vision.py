@@ -23,7 +23,7 @@ interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant
 interpreter.allocate_tensors()
 
 print("Starting video stream...")
-vs = VideoCapture(src=1,
+vs = cv2.VideoCapture(src=1,
                  usePiCamera = False,
                  resolution = RESOLUTION,
                  framerate = FRAMERATE).start()
