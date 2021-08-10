@@ -23,10 +23,11 @@ interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant
 interpreter.allocate_tensors()
 
 print("Starting video stream...")
-vs = cv2.VideoCapture(src=1,
-                 usePiCamera = False,
-                 resolution = RESOLUTION,
-                 framerate = FRAMERATE).start()
+vs = cv2.VideoCapture(1)
+
+#                 usePiCamera = False,
+#                 resolution = RESOLUTION,
+#                 framerate = FRAMERATE).start()
 
 print("Waiting for camera feed to start...")
 time.sleep(1.0) # wait for camera feed to start
