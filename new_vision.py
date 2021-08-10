@@ -20,7 +20,7 @@ FRAMERATE = 30
 
 print("Loading face detection engine...")
 
-interpreter = make_interpreter("./ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
+interpreter = make_interpreter("./mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite")
 interpreter.allocate_tensors()
 
 print("Starting video stream...")
