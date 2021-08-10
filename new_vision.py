@@ -12,8 +12,8 @@ from pycoral.utils.edgetpu import make_interpreter
 from imutils.video import VideoStream
 from PIL import Image, ImageDraw
 
-HEIGHT = 1080 # pixels
-WIDTH = 1920 # pixels
+HEIGHT = 720 # pixels
+WIDTH =  1280 # pixels
 RESOLUTION = (WIDTH, HEIGHT)
 FRAMERATE = 30
 
@@ -28,7 +28,7 @@ vs = VideoStream(src=0,
                  resolution=RESOLUTION,
                  framerate = FRAMERATE).start()
 
-print("Waiting 5 seconds for camera feed to start...")
+print("Waiting for camera feed to start...")
 time.sleep(1.0) # wait for camera feed to start
 print("Opening camera stream...")
 
@@ -45,11 +45,10 @@ while True:
     face_box_list = detect.get_objects(interpreter, 0.7, scale)
 
     draw = ImageDraw.Draw(image)
-    
+
     for face in face_box_list:
         bbox = face.bbox
         draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='white')
 
     displayImage = np.asarray(image)
     cv2.imshow('Coral Live Object Detection', displayImage)
-    
