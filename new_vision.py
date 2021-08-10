@@ -12,34 +12,20 @@ from pycoral.utils.edgetpu import make_interpreter
 from imutils.video import VideoStream
 from PIL import Image, ImageDraw
 
-HEIGHT = 1080 # pixels
-WIDTH =  1920 # pixels
-RESOLUTION = (WIDTH, HEIGHT)
-FRAMERATE = 30
-
 print("Loading face detection engine...")
-
 interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite")
 interpreter.allocate_tensors()
 
-#print("Starting video stream...")
-#vs = VideoStream(src=0,
-#                 usePiCamera = False,
-#                 resolution = RESOLUTION,
-#                 framerate = FRAMERATE).start()
-
-
-cap = cv2.VideoCapture(0)
-if not cap.isOpened():
+vc = cv2.Videovcture(0)
+if not vc.isOpened():
     print("Cannot open USB camera.")
     exit()
 
 while True:
-    ret, frame = cap.read()
+    ret, frame = vc.read()
     if not ret:
-        print("No frame received; exiting...")
+        print("No frame received from camera; exiting...")
         break
-    # np_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     image = Image.fromarray(frame)
     _, scale = common.set_resized_input(
         interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
@@ -53,6 +39,5 @@ while True:
     cv2.imshow('Object Detection', displayImage)
     if cv2.waitKey(1) == ord('q'):
         break
-# When everything done, release the capture
-cap.release()
+vc.release()
 cv2.destroyAllWindows()
