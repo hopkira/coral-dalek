@@ -50,7 +50,7 @@ while True:
     #    bbox = face.bbox
     #    draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='white')
     #displayImage = np.asarray(image)
-    cv2.imshow('Object Detection', displayImage)
+    cv2.imshow('Object Detection', frame)
     if cv2.waitKey(1) == ord('q'):
         break
 # When everything done, release the capture
