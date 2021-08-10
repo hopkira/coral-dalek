@@ -16,7 +16,7 @@ print("Loading face detection engine...")
 interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite")
 interpreter.allocate_tensors()
 
-vc = cv2.Videovcture(0)
+vc = cv2.VideoCapture(0)
 if not vc.isOpened():
     print("Cannot open USB camera.")
     exit()
