@@ -1,4 +1,5 @@
 {
     "editor.fontSize": 18,
-    "python.pythonPath": "/home/pi/.virtualenvs/coral/bin/python"
+    "python.pythonPath": "/home/pi/.virtualenvs/coral/bin/python",
+    "python.linting.pylintEnabled": true
 }
