@@ -29,7 +29,7 @@ interpreter.allocate_tensors()
 #                 framerate = FRAMERATE).start()
 
 
-cap = cv.VideoCapture(0)
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Cannot open USB camera.")
     exit()
@@ -51,8 +51,8 @@ while True:
     #    draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='white')
     #displayImage = np.asarray(image)
     cv2.imshow('Object Detection', displayImage)
-    if cv.waitKey(1) == ord('q'):
+    if cv2.waitKey(1) == ord('q'):
         break
 # When everything done, release the capture
 cap.release()
-cv.destroyAllWindows()
+cv2.destroyAllWindows()
