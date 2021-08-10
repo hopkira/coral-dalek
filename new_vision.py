@@ -12,8 +12,8 @@ from pycoral.utils.edgetpu import make_interpreter
 from imutils.video import VideoStream
 from PIL import Image, ImageDraw
 
-HEIGHT = 720 # pixels
-WIDTH =  1280 # pixels
+HEIGHT = 1080 # pixels
+WIDTH =  1920 # pixels
 RESOLUTION = (WIDTH, HEIGHT)
 FRAMERATE = 30
 
@@ -51,4 +51,5 @@ while True:
     #    draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='white')
 
     # displayImage = np.asarray(image)
-    cv2.imshow('Object Detection', cam_frame)
+    displayImage = cam_frame.convert('RGB')
+    cv2.imshow('Object Detection', displayImage)
