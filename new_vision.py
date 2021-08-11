@@ -36,8 +36,8 @@ def create_transform(x, y):
     spl = UnivariateSpline(x, y)
     return spl(range(256))
 
-inc_col = create_transform([0, 64, 128, 192, 256],[128, 16, 200, 225, 256])
-dec_col = create_transform([0, 64, 128, 192, 256],[55, 72, 90, 110, 128])
+inc_col = create_transform([0, 64, 128, 192, 256],[128, 165, 200, 225, 256])
+dec_col = create_transform([0, 64, 128, 192, 256],[55, 72, 128, 192, 192])
 
 print("Starting video capture")
 
