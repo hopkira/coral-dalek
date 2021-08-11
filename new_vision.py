@@ -50,12 +50,10 @@ while True:
     for face in face_box_list:
         bbox = face.bbox
         draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='white')
-        face_box = bbox.flatten().astype("int")
-        (start_x, start_y, end_x, end_y) = face_box
-        box = dlib.rectangle(left = start_x,
-                             right = end_x,
-                             top = start_y,
-                             bottom = end_y)
+        box = dlib.rectangle(left = bbox.min,
+                             right = bbox.max,
+                             top = bbox.ymin,
+                             bottom = bbox.ymax)
         shape = shape_pred(image, box)
         if shape:
             face_chip_img = dlib.get_face_chip(image, shape)
