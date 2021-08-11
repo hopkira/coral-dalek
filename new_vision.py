@@ -58,7 +58,7 @@ while True:
         if shape:
             face_chip_img = dlib.get_face_chip(frame, shape)
             face_descriptor = facerec.compute_face_descriptor(face_chip_img)
-            name = face_recog.recognize_face(face_descriptor, threshold = 0.7)
+            name = face_recog.recognize_face(face_descriptor, threshold = 0.9)
         if name:
             draw.text((bbox.xmin + 10, bbox.ymin + 10), name, fill='white')
 
