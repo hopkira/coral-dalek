@@ -20,8 +20,9 @@ class FaceRecognizer():
         argmin = np.argmin(distances)
         min_dist = distances[argmin]
         if min_dist > threshold:
-            name = "Unknown"
+            name = "unknown"
         else:
             name = self.labels[argmin]
-            print("Identified " + str(name))
+            name = name + " @ " + str(min_dist*100) + "%"
+            # print("Identified " + str(name))
         return name
