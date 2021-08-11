@@ -66,7 +66,8 @@ while True:
     draw = ImageDraw.Draw(image)
     for face in face_box_list:
         bbox = face.bbox
-        draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='black')
+        # draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='black')
+        draw.ellipse((bbox.xmin, bbox.ymin, bbox.xmax, bbox.ymax), outline='black')
         box = dlib.rectangle(left = bbox.xmin,
                              right = bbox.xmax,
                              top = bbox.ymin,
@@ -77,7 +78,7 @@ while True:
             face_descriptor = facerec.compute_face_descriptor(face_chip_img)
             name = face_recog.recognize_face(face_descriptor, threshold = 0.55)
         if name:
-            draw.text((bbox.xmin + 10, bbox.ymin + 10), name, fill='black')
+            draw.text((bbox.xmin, bbox.ymin - 20), name, fill='black')
 
     displayImage = np.asarray(image)
 
