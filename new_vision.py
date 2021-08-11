@@ -50,7 +50,20 @@ while True:
     for face in face_box_list:
         bbox = face.bbox
         draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='white')
-        # line 556 in Dalek State
+        face_box = bbox.flatten().astype("int")
+        (start_x, start_y, end_x, end_y) = face_box
+        box = dlib.rectangle(left = start_x,
+                             right = end_x,
+                             top = start_y,
+                             bottom = end_y)
+        shape = shape_pred(image, box)
+        if shape:
+            face_chip_img = dlib.get_face_chip(image, shape)
+            face_descriptor = facerec.compute_face_descriptor(face_chip_img)
+            name = face_recog.recognize_face(face_descriptor, threshold = 0.7)
+        if name:
+            draw.text((bbox.xmin + 10, bbox.ymin + 10),name,fill='white')
+
     displayImage = np.asarray(image)
     displayImage = cv2.cvtColor(displayImage, cv2.COLOR_RGB2BGR)
     cv2.imshow('Object Detection', displayImage)
