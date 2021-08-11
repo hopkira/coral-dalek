@@ -28,9 +28,11 @@ print("Loading face recognition engine...")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 face_recog = FaceRecognizer()
 
+# https://www.askaswiss.com/2016/02/how-to-manipulate-color-temperature-opencv-python.html
+
 def create_transform(x, y):
     spl = UnivariateSpline(x, y)
-    return spl(xrange(256))
+    return spl(range(256))
 
 start = [0, 128, 255]
 up = [0, 192, 255]
