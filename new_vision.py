@@ -89,7 +89,7 @@ while True:
 
     # displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
 
-    cv2.imshow('Object Detection', displayImage)
+    cv2.imshow('Dalek Eyestalk PoV', displayImage)
     if cv2.waitKey(1) == ord('q'):
         break
 vc.release()
