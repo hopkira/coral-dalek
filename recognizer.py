@@ -23,6 +23,6 @@ class FaceRecognizer():
             name = "unknown"
         else:
             name = self.labels[argmin]
-            name = name + " @ " + str(min_dist*100) + "%"
+            name = name + " @ " + str(int(100.0*(1-min_dist))) + "%"
             # print("Identified " + str(name))
         return name
