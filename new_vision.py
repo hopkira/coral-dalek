@@ -27,6 +27,17 @@ print("Loading face recognition engine...")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 face_recog = FaceRecognizer()
 
+def create_transform(x, y):
+    spl = UnivariateSpline(x, y)
+    return spl(xrange(256))
+
+init = [0, 128, 255]
+up = [0, 192, 255]
+down = [0, 81, 255]
+
+inc_col = create_transform(init, up)
+dec_col = create_transform(init, down)
+
 print("Starting video capture")
 
 vc = cv2.VideoCapture(0)
@@ -68,7 +79,15 @@ while True:
             draw.text((bbox.xmin + 10, bbox.ymin + 10), name, fill='white')
 
     displayImage = np.asarray(image)
-    displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
+
+    blue, green, red = cv2.split(displayImage)
+    red = cv2.LUT(red, dec_col).astype(np.uint8)
+    blue = cv2.LUT(blue, dec_col).astype(np.uint8)
+    green = cv2.LUT(green, inc_col).astype(np.uint8)
+    displayImage = cv2.merge((red, green, blue))
+
+    # displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
+
     cv2.imshow('Object Detection', displayImage)
     if cv2.waitKey(1) == ord('q'):
         break
