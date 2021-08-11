@@ -34,8 +34,8 @@ if not vc.isOpened():
     print("Cannot open USB camera.")
     exit()
 
-width = 1920
-height = 1080
+width = 1280
+height = 720
 vc.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 vc.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
