@@ -54,13 +54,13 @@ while True:
                              right = bbox.xmax,
                              top = bbox.ymin,
                              bottom = bbox.ymax)
-        shape = shape_pred(image, box)
+        shape = shape_pred(frame, box)
         if shape:
-            face_chip_img = dlib.get_face_chip(image, shape)
+            face_chip_img = dlib.get_face_chip(frame, shape)
             face_descriptor = facerec.compute_face_descriptor(face_chip_img)
             name = face_recog.recognize_face(face_descriptor, threshold = 0.7)
         if name:
-            draw.text((bbox.xmin + 10, bbox.ymin + 10),name,fill='white')
+            draw.text((bbox.xmin + 10, bbox.ymin + 10), name, fill='white')
 
     displayImage = np.asarray(image)
     displayImage = cv2.cvtColor(displayImage, cv2.COLOR_RGB2BGR)
