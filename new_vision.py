@@ -34,6 +34,11 @@ if not vc.isOpened():
     print("Cannot open USB camera.")
     exit()
 
+cap_width  = vcap.get(cv2.CAP_PROP_FRAME_WIDTH)
+cap_height = vcap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+cap_fps = vcap.get(cv2.CAP_PROP_FPS)
+print(cap_width," x ", cap_height," @ ", cap_fps)
+
 while True:
     ret, frame = vc.read()
     if not ret:
