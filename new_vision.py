@@ -8,6 +8,7 @@ import dlib
 from pycoral.adapters import common
 from pycoral.adapters import detect
 from pycoral.utils.edgetpu import make_interpreter
+from scipy.interpolate import UnivariateSpline
 
 from imutils.video import VideoStream
 from PIL import Image, ImageDraw
