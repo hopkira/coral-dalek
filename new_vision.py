@@ -68,7 +68,7 @@ while True:
             draw.text((bbox.xmin + 10, bbox.ymin + 10), name, fill='white')
 
     displayImage = np.asarray(image)
-    displayImage = cv2.cvtColor(displayImage, cv2.COLOR_RGB2BGR)
+    displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
     cv2.imshow('Object Detection', displayImage)
     if cv2.waitKey(1) == ord('q'):
         break
