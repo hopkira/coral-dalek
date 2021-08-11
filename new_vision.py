@@ -50,8 +50,8 @@ while True:
     for face in face_box_list:
         bbox = face.bbox
         draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='white')
-        box = dlib.rectangle(left = bbox.min,
-                             right = bbox.max,
+        box = dlib.rectangle(left = bbox.xmin,
+                             right = bbox.xmax,
                              top = bbox.ymin,
                              bottom = bbox.ymax)
         shape = shape_pred(image, box)
