@@ -88,7 +88,7 @@ while True:
     displayImage = cv2.merge((red, green, blue))
 
     # displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
-    displayImage = cv2.addWeighted(displayImage,1.0,overlay,1.0,0)
+    displayImage = cv2.addWeighted(displayImage,0.9,overlay,0.1,0)
 
     cv2.imshow('Dalek Eyestalk PoV', displayImage)
     if cv2.waitKey(1) == ord('q'):
