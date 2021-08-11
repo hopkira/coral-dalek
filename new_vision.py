@@ -17,6 +17,8 @@ from PIL import Image, ImageDraw
 from faceextractor import FaceDataExtractor
 from recognizer import FaceRecognizer
 
+# overlay = cv2.imread('dice.png')
+
 print("Loading face detection engine...")
 interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite")
 interpreter.allocate_tensors()
@@ -34,8 +36,8 @@ def create_transform(x, y):
     spl = UnivariateSpline(x, y)
     return spl(range(256))
 
-inc_col = create_transform([0, 64, 128, 192, 256],[0, 128, 200, 225, 256])
-dec_col = create_transform([0, 64, 128, 192, 256],[0, 16, 32, 64, 128])
+inc_col = create_transform([0, 64, 128, 192, 256],[64, 128, 200, 225, 256])
+dec_col = create_transform([0, 64, 128, 192, 256],[8, 16, 32, 64, 128])
 
 print("Starting video capture")
 
