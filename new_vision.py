@@ -26,7 +26,7 @@ interpreter.allocate_tensors()
 print("Loading face landmark detection engine...")
 shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
 face_ext = FaceDataExtractor()
-print("Loading face recogniton engine...")
+print("Loading face recognitn engine...")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 face_recog = FaceRecognizer()
 
@@ -36,7 +36,7 @@ def create_transform(x, y):
     spl = UnivariateSpline(x, y)
     return spl(range(256))
 
-inc_col = create_transform([0, 64, 128, 192, 256],[128, 165, 200, 225, 256])
+inc_col = create_transform([0, 64, 128, 192, 256],[128, 145, 160, 175, 196])
 dec_col = create_transform([0, 64, 128, 192, 256],[55, 72, 90, 110, 128])
 
 print("Starting video capture")
