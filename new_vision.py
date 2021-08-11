@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw
 from faceextractor import FaceDataExtractor
 from recognizer import FaceRecognizer
 
-# overlay = cv2.imread('dice.png')
+overlay = cv2.imread('dalekpov.png')
 
 print("Loading face detection engine...")
 interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite")
@@ -88,6 +88,7 @@ while True:
     displayImage = cv2.merge((red, green, blue))
 
     # displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
+    displayImage = cv2.addWeighted(displayImage,0.5,overlay,0.5,0)
 
     cv2.imshow('Dalek Eyestalk PoV', displayImage)
     if cv2.waitKey(1) == ord('q'):
