@@ -66,8 +66,7 @@ while True:
     draw = ImageDraw.Draw(image)
     for face in face_box_list:
         bbox = face.bbox
-        # draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='black')
-        draw.ellipse((bbox.xmin, bbox.ymin, bbox.xmax, bbox.ymax), outline='black')
+        draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='black')
         box = dlib.rectangle(left = bbox.xmin,
                              right = bbox.xmax,
                              top = bbox.ymin,
