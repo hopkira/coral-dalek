@@ -119,7 +119,7 @@ while True:
             cv2.imshow('Dalek Fry Eyestalk PoV', displayImage, cv2.WINDOW_NORMAL)
             if cv2.waitKey(1) == ord('q'):
                 break
-    except:
+    except KeyboardInterrupt:
         vc.release()
         cv2.destroyAllWindows()
         print("Program halted by user")
