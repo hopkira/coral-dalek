@@ -1,5 +1,6 @@
 import time
 import sys
+import argparse
 
 # import image and DL processing
 import cv2
@@ -19,6 +20,18 @@ from PIL import Image, ImageDraw
 from faceextractor import FaceDataExtractor
 from recognizer import FaceRecognizer
 
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-o", "--output", type=str2bool, default=False, action='store_true',
+	help="Display dalek PoV")
+ap.add_argument("-f", "--face", type=float, default=0.7,
+	help="Face detection certainty")
+ap.add_argument("-r", "--recognize", type=float, default=0.7,
+	help="Face recognition certainty")
+args = vars(ap.parse_args())
+
+print(args)
+
 print("Loading face detection engine...")
 interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite")
 interpreter.allocate_tensors()
@@ -34,7 +47,7 @@ output=False
 
 # https://www.askaswiss.com/2016/02/how-to-manipulate-color-temperature-opencv-python.html
 
-if output:
+if args.output:
     pov = 0
     overlay=[]
     overlay.append(cv2.imread('dalekpov-a.png'))
@@ -73,7 +86,7 @@ while True:
         _, scale = common.set_resized_input(
             interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
         interpreter.invoke()
-        face_box_list = detect.get_objects(interpreter, 0.7, scale)
+        face_box_list = detect.get_objects(interpreter, args.face, scale)
 
         draw = ImageDraw.Draw(image)
         for face in face_box_list:
@@ -87,14 +100,14 @@ while True:
             if shape:
                 face_chip_img = dlib.get_face_chip(frame, shape)
                 face_descriptor = facerec.compute_face_descriptor(face_chip_img)
-                name = face_recog.recognize_face(face_descriptor, threshold = 0.55)
+                name = face_recog.recognize_face(face_descriptor, threshold = args.recognize)
             if name:
                 if output:
                     draw.text((bbox.xmin, bbox.ymin - 20), name, fill='black')
                 else:
                     print(name)
         
-        if output:
+        if args.output:
             displayImage = np.asarray(image)
             blue, green, red = cv2.split(displayImage)
             red = cv2.LUT(red, dec_col).astype(np.uint8)
