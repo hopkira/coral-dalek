@@ -22,7 +22,7 @@ from recognizer import FaceRecognizer
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-o", "--output", type=bool, default=False, action="store_true",
+ap.add_argument("-o", "--output", default=False, action="store_true",
 	help="Display dalek PoV")
 ap.add_argument("-f", "--face", type=float, default=0.7,
 	help="Face detection certainty")
