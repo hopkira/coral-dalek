@@ -96,7 +96,7 @@ while True:
     if (randrange(10) > 6): pov = randrange(3)
     displayImage = cv2.addWeighted(displayImage,0.8,overlay[pov],0.2,0)
 
-    cv2.imshow('Dalek Eyestalk PoV', displayImage)
+    cv2.imshow('Dalek Eyestalk PoV', displayImage, cv2.WINDOW_NORMAL)
     if cv2.waitKey(1) == ord('q'):
         break
 vc.release()
