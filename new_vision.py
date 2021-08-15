@@ -89,7 +89,8 @@ while True:
             if name:
                 if output:
                     draw.text((bbox.xmin, bbox.ymin - 20), name, fill='black')
-                else print(name)
+                else:
+                    print(name)
         
         if output:
             displayImage = np.asarray(image)
