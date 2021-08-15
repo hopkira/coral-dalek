@@ -93,7 +93,7 @@ while True:
     displayImage = cv2.merge((red, green, blue))
 
     # displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
-    if (randrange(10) > 8): pov = randrange(3)
+    if (randrange(10) > 6): pov = randrange(3)
     displayImage = cv2.addWeighted(displayImage,0.8,overlay[pov],0.2,0)
 
     cv2.imshow('Dalek Eyestalk PoV', displayImage)
