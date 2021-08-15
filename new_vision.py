@@ -60,6 +60,7 @@ cap_height = vc.get(cv2.CAP_PROP_FRAME_HEIGHT)
 cap_fps = vc.get(cv2.CAP_PROP_FPS)
 print(cap_width," x ", cap_height," @ ", cap_fps)
 
+print("Entering main loop, press CTRL+C to exit...")
 while True:
     try:
         ret, frame = vc.read()
@@ -110,4 +111,5 @@ while True:
     except:
         vc.release()
         cv2.destroyAllWindows()
-        sys.exit(0,"Program halted by user")
+        print("Program halted by user")
+        sys.exit(0)
