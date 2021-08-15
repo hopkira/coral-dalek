@@ -118,7 +118,6 @@ while True:
             displayImage = cv2.addWeighted(displayImage,0.8,overlay[pov],0.2,0)
             cv2.imshow('Dalek Fry Eyestalk PoV', displayImage)
             if cv2.waitKey(1) == ord('q'):
-                print("Program quit by pressing q")
                 raise KeyboardInterrupt
     except KeyboardInterrupt:
         vc.release()
