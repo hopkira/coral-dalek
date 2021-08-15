@@ -110,4 +110,4 @@ while True:
     except:
         vc.release()
         cv2.destroyAllWindows()
-        sys.exit(0)
+        sys.exit(0,"Program halted by user")
