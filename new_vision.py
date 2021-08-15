@@ -43,11 +43,9 @@ print("Loading face recognitn engine...")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 face_recog = FaceRecognizer()
 
-output=False
-
 # https://www.askaswiss.com/2016/02/how-to-manipulate-color-temperature-opencv-python.html
 
-if args.output:
+if args['output']:
     pov = 0
     overlay=[]
     overlay.append(cv2.imread('dalekpov-a.png'))
@@ -86,7 +84,7 @@ while True:
         _, scale = common.set_resized_input(
             interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
         interpreter.invoke()
-        face_box_list = detect.get_objects(interpreter, args.face, scale)
+        face_box_list = detect.get_objects(interpreter, args['face'], scale)
 
         draw = ImageDraw.Draw(image)
         for face in face_box_list:
@@ -100,14 +98,14 @@ while True:
             if shape:
                 face_chip_img = dlib.get_face_chip(frame, shape)
                 face_descriptor = facerec.compute_face_descriptor(face_chip_img)
-                name = face_recog.recognize_face(face_descriptor, threshold = args.recognize)
+                name = face_recog.recognize_face(face_descriptor, threshold = args['recognize'])
             if name:
                 if output:
                     draw.text((bbox.xmin, bbox.ymin - 20), name, fill='black')
                 else:
                     print(name)
         
-        if args.output:
+        if args['output']:
             displayImage = np.asarray(image)
             blue, green, red = cv2.split(displayImage)
             red = cv2.LUT(red, dec_col).astype(np.uint8)
@@ -118,7 +116,7 @@ while True:
             # displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
             if (randrange(10) > 6): pov = randrange(3)
             displayImage = cv2.addWeighted(displayImage,0.8,overlay[pov],0.2,0)
-            cv2.imshow('Dalek Eyestalk PoV', displayImage, cv2.WINDOW_NORMAL)
+            cv2.imshow('Dalek Fry Eyestalk PoV', displayImage, cv2.WINDOW_NORMAL)
             if cv2.waitKey(1) == ord('q'):
                 break
     except:
