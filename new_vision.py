@@ -4,6 +4,7 @@ import time
 import cv2
 import numpy as np
 import dlib
+from random import randrange
 # from edgetpu.detection.engine import DetectionEngine
 from pycoral.adapters import common
 from pycoral.adapters import detect
@@ -15,9 +16,13 @@ from PIL import Image, ImageDraw
 
 # import local helper classes
 from faceextractor import FaceDataExtractor
-from recognizer import FaceRecognizer
+from recognizer import FaceRecognize
 
-overlay = cv2.imread('dalekpov.png')
+pov = 0
+overlay=[]
+overlay.append(cv2.imread('dalekpov-a.png'))
+overlay.append(cv2.imread('dalekpov-b.png'))
+overlay.append(cv2.imread('dalekpov-c.png'))
 
 print("Loading face detection engine...")
 interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite")
@@ -88,7 +93,8 @@ while True:
     displayImage = cv2.merge((red, green, blue))
 
     # displayImage = cv2.cvtColor(displayImage, cv2.COLOR_BGR2GRAY)
-    displayImage = cv2.addWeighted(displayImage,0.8,overlay,0.2,0)
+    if (randrange(10) > 8): pov = randrange(3)
+    displayImage = cv2.addWeighted(displayImage,0.8,overlay[pov],0.2,0)
 
     cv2.imshow('Dalek Eyestalk PoV', displayImage)
     if cv2.waitKey(1) == ord('q'):
