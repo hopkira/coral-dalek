@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw
 
 # import local helper classes
 from faceextractor import FaceDataExtractor
-from recognizer import FaceRecognize
+from recognizer import FaceRecognizer
 
 pov = 0
 overlay=[]
