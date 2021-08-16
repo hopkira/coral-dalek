@@ -16,8 +16,13 @@ recognise them.  It assumes:
 The Dalek operator can also optionally activate and deactivate the Dalek via an MQTT message
 over Bluetooth BLE; this assumes that there is a localhost MQTT server
 
+Args:
+    -o, --output (bool): Whether to show a Dalek point of view window
+    -f, --face: (float 0.0 to 1.0): minimum confidence to detect a face via TPU
+    -r, --recognize: (float 0.0 to 1.0): minimum confidence to recognize a known face
+
 Example:
-    $ python3 new_coral_dalek.py
+    $ python3 new_coral_dalek.py -o -f 0.7 -r 0.9
 
 Todo:
     * Add in the hover lights on an additional servo channel
@@ -61,7 +66,6 @@ import pyaudio
 import paho.mqtt.client as mqtt
 
 # import local helper classes
-from faceextractor import FaceDataExtractor
 from recognizer import FaceRecognizer
 
 # construct the argument parser and parse the arguments
@@ -153,7 +157,6 @@ interpreter.allocate_tensors()
 #                        "ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 print("Loading face landmark detection engine...")
 shape_pred = dlib.shape_predictor("./shape_predictor_5_face_landmarks.dat")
-face_ext = FaceDataExtractor()
 print("Loading face recognition engine...")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 face_recog = FaceRecognizer()
@@ -355,7 +358,9 @@ class Waiting(State):
         super(Waiting, self).__init__()
 
     def run(self):
-        faces = detect_faces()
+        image, frame, faces = detect_faces()
+        if args['output']:
+            dalek_pov_window(image)
         if len(faces) > 0:
             dalek.on_event('face_detected')
 
@@ -557,6 +562,21 @@ class Dalek(object):
         # The next state will be the result of the on_event function.
         self.state = self.state.on_event(event)
 
+def dalek_pov_window(image):
+    '''
+    Turns a PIL Image into a Dalek PoV window
+    '''
+    displayImage = np.asarray(image)
+    blue, green, red = cv2.split(displayImage)
+    red = cv2.LUT(red, dec_col).astype(np.uint8)
+    blue = cv2.LUT(blue, dec_col).astype(np.uint8)
+    green = cv2.LUT(green, inc_col).astype(np.uint8)
+    displayImage = cv2.merge((red, green, blue))
+    if (randrange(10) > 6): pov = randrange(3)
+    displayImage = cv2.addWeighted(displayImage,0.8,overlay[pov],0.2,0)
+    cv2.imshow('Dalek Fry Eyestalk PoV', displayImage)
+    if cv2.waitKey(1) == ord('q'):
+        raise KeyboardInterrupt
 
 def detect_faces():
     '''
@@ -578,7 +598,7 @@ def detect_faces():
         interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
     interpreter.invoke()
     face_box_list = detect.get_objects(interpreter, args['face'], scale)
-    return face_box_list
+    return image, frame, face_box_list
 
 
 def recognise_faces():
@@ -588,22 +608,12 @@ def recognise_faces():
     unknown if someone unknown is in the image
     '''
 
-    ret, frame = vc.read()
-    if not ret:
-        print("No frame received from camera; exiting...")
-        raise KeyboardInterrupt
-    # Convert frame from color_coverted = cv2.cvtColor(opencv_image, cv2.COLOR_BGR2RGB)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    image = Image.fromarray(frame)
-    _, scale = common.set_resized_input(
-        interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
-    interpreter.invoke()
-    face_box_list = detect.get_objects(interpreter, args['face'], scale)
+    image, frame, face_box_list = detect_faces()
     draw = ImageDraw.Draw(image)
+    face_names = []
     for face in face_box_list:
         bbox = face.bbox
         draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='black')
-        face_names = []
         box = dlib.rectangle(left = bbox.xmin,
                             right = bbox.xmax,
                             top = bbox.ymin,
@@ -615,17 +625,7 @@ def recognise_faces():
             name = face_recog.recognize_face(face_descriptor, threshold = args['recognize'])
             face_names.append(name)
     if args['output']:
-        displayImage = np.asarray(image)
-        blue, green, red = cv2.split(displayImage)
-        red = cv2.LUT(red, dec_col).astype(np.uint8)
-        blue = cv2.LUT(blue, dec_col).astype(np.uint8)
-        green = cv2.LUT(green, inc_col).astype(np.uint8)
-        displayImage = cv2.merge((red, green, blue))
-        if (randrange(10) > 6): pov = randrange(3)
-        displayImage = cv2.addWeighted(displayImage,0.8,overlay[pov],0.2,0)
-        cv2.imshow('Dalek Fry Eyestalk PoV', displayImage)
-        if cv2.waitKey(1) == ord('q'):
-            raise KeyboardInterrupt
+        dalek_pov_window(image)
     return face_names
 
 
