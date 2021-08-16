@@ -7,7 +7,7 @@ recognise them.  It assumes:
 
     * the use of an Adafruit Servo Controller to control an iris servo
       and the lights within the eye and dome (using a TIP120 transistor to amplify the PWM signal)
-    * a Pi High Quality camera with 6mm lens
+    * a Pi USB webcam (640 x 480 x 32 FPS)
     * a Google Coral TPU to provide acceleration for the face detection function
     * a database of face descriptors and labels as created by the training.py program
       (so be sure to run that program first!)
@@ -17,7 +17,7 @@ The Dalek operator can also optionally activate and deactivate the Dalek via an 
 over Bluetooth BLE; this assumes that there is a localhost MQTT server
 
 Example:
-    $ python3 dalek_state.py
+    $ python3 new_coral_dalek.py
 
 Todo:
     * Add in the hover lights on an additional servo channel
@@ -31,9 +31,12 @@ are copyright BBC/Terry Nation 1963
 
 """
 import os
+import sys
+import argparse
 import time
 import random
 from threading import Thread
+from random import randrange
 
 # import servo board
 from board import SCL, SDA
@@ -48,9 +51,10 @@ import dlib
 from pycoral.adapters import common
 from pycoral.adapters import detect
 from pycoral.utils.edgetpu import make_interpreter
+from scipy.interpolate import UnivariateSpline
 
 from imutils.video import VideoStream
-from PIL import Image
+from PIL import Image, ImageDraw
 
 # import audio and messaging
 import pyaudio
@@ -60,6 +64,17 @@ import paho.mqtt.client as mqtt
 from faceextractor import FaceDataExtractor
 from recognizer import FaceRecognizer
 
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-o", "--output", default=False, action="store_true",
+	help="Display dalek PoV")
+ap.add_argument("-f", "--face", type=float, default=0.7,
+	help="Face detection certainty")
+ap.add_argument("-r", "--recognize", type=float, default=0.7,
+	help="Face recognition certainty")
+args = vars(ap.parse_args())
+
+print(args)
 
 FREQUENCY = 50
 PERIOD = 1.0 / float(FREQUENCY) * 1000.0
@@ -83,7 +98,7 @@ UNKNOWN_GAP = 30  # maximum time window in seconds for valid uknown events
 SAMPLES = 8  # number of training photos per person (limit 50 in total)
 CHUNK = 2**13  # buffer size for audio capture and analysis
 RATE = 44100  # recording rate in Hz
-MAX = 10000  # minimum volume level for dome lights to illuminate
+MAX = 400  # minimum volume level for dome lights to illuminate
 
 # These control the three different dalek voices
 SPEED_DEFAULT = 175
@@ -119,7 +134,7 @@ SERVO_MAX = 0.8
 SERVO_MIN = 0.2
 
 # Vales to control whether dome lights are on or off
-VOL_MIN = 500
+VOL_MIN = 400
 VOL_MAX = 8000
 
 HEIGHT = 1080 # pixels
@@ -131,9 +146,9 @@ unknown_count = 0  # number of times an unknown face has been seen
 unknown_seen = round(time.time())
 
 print("Loading face detection engine...")
-
-interpreter = make_interpreter("./ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
+interpreter = make_interpreter("/home/pi/coral-dalek/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite")
 interpreter.allocate_tensors()
+
 #model = DetectionEngine("/usr/share/edgetpu/examples/models/"
 #                        "ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite")
 print("Loading face landmark detection engine...")
@@ -142,15 +157,34 @@ face_ext = FaceDataExtractor()
 print("Loading face recognition engine...")
 facerec = dlib.face_recognition_model_v1("./dlib_face_recognition_resnet_model_v1.dat")
 face_recog = FaceRecognizer()
-print("Starting video stream...")
-vs = VideoStream(src=0,
-                 usePiCamera = False,
-                 resolution=RESOLUTION,
-                 framerate = FRAMERATE).start()
 
-print("Waiting 5 seconds for camera feed to start...")
-time.sleep(5.0) # wait for camera feed to start
-print("Opening camera stream...")
+if args['output']:
+    pov = 0
+    overlay=[]
+    overlay.append(cv2.imread('dalekpov-a.png'))
+    overlay.append(cv2.imread('dalekpov-b.png'))
+    overlay.append(cv2.imread('dalekpov-c.png'))
+
+    def create_transform(x, y):
+        spl = UnivariateSpline(x, y)
+        return spl(range(256))
+
+    inc_col = create_transform([0, 64, 128, 192, 256],[150, 175, 200, 225, 256])
+    dec_col = create_transform([0, 64, 128, 192, 256],[28, 64, 90, 110, 128])
+
+print("Starting video stream...")
+
+vc = cv2.VideoCapture(0)
+if not vc.isOpened():
+    print("Cannot open USB camera.")
+    sys.exit(0)
+
+cap_width  = vc.get(cv2.CAP_PROP_FRAME_WIDTH)
+cap_height = vc.get(cv2.CAP_PROP_FRAME_HEIGHT)
+cap_fps = vc.get(cv2.CAP_PROP_FPS)
+print(cap_width," x ", cap_height," @ ", cap_fps)
+
+print("Entering main loop, press CTRL+C to exit...")
 
 def dalek_status(direction):
     """
@@ -313,10 +347,10 @@ class State(object):
 
 # Start Dalek states
 class Waiting(State):
-
     '''
     The child state where the Dalek is scanning for faces, but appears dormant
     '''
+
     def __init__(self):
         super(Waiting, self).__init__()
 
@@ -532,23 +566,18 @@ def detect_faces():
     This is much quicker than identifying the face, so it used to wake up
     the dalek.  This makes the recognition seem much more immediate.
     '''
-    cam_frame = vs.read()
-    np_frame = cv2.cvtColor(cam_frame, cv2.COLOR_BGR2RGB)
-    image = Image.fromarray(np_frame)
-    
+
+    ret, frame = vc.read()
+    if not ret:
+        print("No frame received from camera; exiting...")
+        raise KeyboardInterrupt
+    # Convert frame from color_coverted = cv2.cvtColor(opencv_image, cv2.COLOR_BGR2RGB)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    image = Image.fromarray(frame)
     _, scale = common.set_resized_input(
         interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
-
     interpreter.invoke()
-
-    face_box_list = detect.get_objects(interpreter, 0.9, scale)
-
-    #face_box_list = model.detect_with_image(img_frame,
-    #    threshold = 0.9,
-    #    keep_aspect_ratio = True,
-    #    relative_coord = False,
-    #    top_k = 3)
-
+    face_box_list = detect.get_objects(interpreter, args['face'], scale)
     return face_box_list
 
 
@@ -558,22 +587,45 @@ def recognise_faces():
     if there are, it attempts to identify them, returning a list of names, or
     unknown if someone unknown is in the image
     '''
-    face_box_list = detect_faces()
-    for face_box in face_box_list:
-        face_data = face_ext.extract_data(face = face_box, np_frame = np_frame)
-        if face_data:
-            face_box = face_box.BBox.flatten().astype("int") # change BBox
-            (start_x, start_y, end_x, end_y) = face_box
-            box = dlib.rectangle(left = start_x,
-                                right = end_x,
-                                top = start_y,
-                                bottom = end_y)
-            shape = shape_pred(np_frame, box)
-            if shape:
-                face_chip_img = dlib.get_face_chip(np_frame, shape)
-                face_descriptor = facerec.compute_face_descriptor(face_chip_img)
-                name = face_recog.recognize_face(face_descriptor, threshold = 0.7)
-                face_names.append(name)
+
+    ret, frame = vc.read()
+    if not ret:
+        print("No frame received from camera; exiting...")
+        raise KeyboardInterrupt
+    # Convert frame from color_coverted = cv2.cvtColor(opencv_image, cv2.COLOR_BGR2RGB)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    image = Image.fromarray(frame)
+    _, scale = common.set_resized_input(
+        interpreter, image.size, lambda size: image.resize(size, Image.ANTIALIAS))
+    interpreter.invoke()
+    face_box_list = detect.get_objects(interpreter, args['face'], scale)
+    draw = ImageDraw.Draw(image)
+    for face in face_box_list:
+        bbox = face.bbox
+        draw.rectangle([(bbox.xmin, bbox.ymin), (bbox.xmax, bbox.ymax)], outline='black')
+        face_names = []
+        box = dlib.rectangle(left = bbox.xmin,
+                            right = bbox.xmax,
+                            top = bbox.ymin,
+                            bottom = bbox.ymax)
+        shape = shape_pred(frame, box)
+        if shape:
+            face_chip_img = dlib.get_face_chip(frame, shape)
+            face_descriptor = facerec.compute_face_descriptor(face_chip_img)
+            name = face_recog.recognize_face(face_descriptor, threshold = args['recognize'])
+            face_names.append(name)
+    if args['output']:
+        displayImage = np.asarray(image)
+        blue, green, red = cv2.split(displayImage)
+        red = cv2.LUT(red, dec_col).astype(np.uint8)
+        blue = cv2.LUT(blue, dec_col).astype(np.uint8)
+        green = cv2.LUT(green, inc_col).astype(np.uint8)
+        displayImage = cv2.merge((red, green, blue))
+        if (randrange(10) > 6): pov = randrange(3)
+        displayImage = cv2.addWeighted(displayImage,0.8,overlay[pov],0.2,0)
+        cv2.imshow('Dalek Fry Eyestalk PoV', displayImage)
+        if cv2.waitKey(1) == ord('q'):
+            raise KeyboardInterrupt
     return face_names
 
 
@@ -705,4 +757,7 @@ except KeyboardInterrupt:
     stream.close()
     p.terminate()
     client.loop_stop()
-    print("Dalek stopped by user.")
+    vc.release()
+    cv2.destroyAllWindows()
+    print("Dalek halted by CTRL+C")
+    sys.exit(0)
