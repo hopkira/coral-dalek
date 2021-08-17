@@ -566,6 +566,7 @@ def dalek_pov_window(image):
     '''
     Turns a PIL Image into a Dalek PoV window
     '''
+    global pov
     displayImage = np.asarray(image)
     blue, green, red = cv2.split(displayImage)
     red = cv2.LUT(red, dec_col).astype(np.uint8)
