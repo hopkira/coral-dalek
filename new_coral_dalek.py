@@ -750,14 +750,14 @@ last_message = ""
 try:
     while True:
         dalek.run()
-        time.sleep(0.1)
-        client.loop(0.1)
+#        time.sleep(0.1)
+#        client.loop(0.1)
 except KeyboardInterrupt:
     pca.deinit()
     stream.stop_stream()
     stream.close()
     p.terminate()
-    client.loop_stop()
+#    client.loop_stop()
     vc.release()
     cv2.destroyAllWindows()
     print("Dalek halted by CTRL+C")
