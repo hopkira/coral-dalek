@@ -664,9 +664,7 @@ def dalek_speak(speech):
                 sox_vol = SOX_VOL_DEFAULT
                 sox_pitch = SOX_PITCH_DEFAULT
             print(clause)
-            cmd = ("espeak -v en-rp '%s' -p %s -s %s -a %s -z "
-                   "--stdout|play -v %s - synth sine fmod 25 pitch %s" %
-                   (clause, pitch, speed, amplitude, sox_vol, sox_pitch))
+            cmd = "espeak -v en-rp '%s' -p %s -s %s -a %s -z --stdout|play -v %s - synth sine fmod 25 pitch %s" % (clause, pitch, speed, amplitude, sox_vol, sox_pitch)
             os.system(cmd)
 
 
