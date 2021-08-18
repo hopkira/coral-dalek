@@ -40,6 +40,7 @@ import sys
 import argparse
 import time
 import random
+import pickle
 from threading import Thread
 from random import randrange
 
@@ -423,16 +424,16 @@ class Awake(State):
         if countdown <= 0:
             dalek.on_event('timeout')
         else:
-            print("Countdown timer:" + str(countdown))
-        face_names = recognise_faces()
-        if len(face_names) > 0:
+            print("Falling asleep in", str(countdown), "seconds")
+        faces = recognise_faces()
+        if len(faces) > 0:
             self.now = round(time.time())
-            for name in face_names:
-                if name == "Unknown":
+            for name in faces:
+                if name == "unknown":
                     dalek.on_event("exterminate")
                 else:
                     dalek_greeting(name)
-            dalek.on_event("greet")
+                    dalek.on_event("greet")
 
     def on_event(self, event):
         if event == 'timeout':
@@ -478,7 +479,7 @@ class Exterminating(State):
         if len(face_names) > 0:
             self.now = round(time.time())
             for face in face_names:
-                if face == "Unknown":
+                if face == "unknown":
                     self.unknown_count += 1
                 else:
                     self.unknown_count = 0
@@ -544,7 +545,9 @@ class Dalek(object):
 
         # Start with a default state.
         dalek_status(AWAKE)
+        dalek_speak("...")
         dalek_speak("I am Darlek Fry!")
+        time.sleep(5)
         dalek_status(ASLEEP)
         self.state = Waiting()
 
@@ -719,6 +722,14 @@ domeLightsThread.start()
 print("Audio thread started...")
 
 dalek = Dalek()
+
+f = open("labels.pickle", 'rb')
+labels = pickle.load(f)
+labels_set = set(labels)
+labels = list(labels_set)
+known_people = []
+for label in labels:
+    known_people.append(Person(label))
 
 last_message = ""
 #client = mqtt.Client("dalek-python")
