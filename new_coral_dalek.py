@@ -501,7 +501,9 @@ class Exterminating(State):
                        "Obey the Darleks!|>Obey the Darleks!",
                        "Unknown human|<in hall|>Exterminate!",
                        "Do not|>move.|You will be|>exterminated!",
-                       "Warning|>Warning|Do not move!")
+                       "Warning|>Warning|Do not move!",
+                       "Danger|Intruder detected|>Danger",
+                       "I am a Darlek|You must not move")
             response = random_msg(warning)
             self.unknown_count = 0
             dalek_speak(response)
@@ -707,7 +709,7 @@ def flash_dome_lights():
         try:
             data = np.frombuffer(stream.read(CHUNK, False),dtype=np.int16)
             vol = abs(int(np.average(np.abs(data))))
-            print(vol)
+            # print(vol)
             if vol > VOL_MIN:
                 vol = min(1.0, vol/VOL_MAX)
                 dalek_light(DOME_LIGHTS, vol)
