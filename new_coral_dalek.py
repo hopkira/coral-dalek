@@ -98,7 +98,7 @@ EVENT_GAP = 5  # maximum time window in seconds for valid detection events
 # no. of recognition events needed with less than
 # EVENT_GAP between them to hit threshold
 THRESHOLD = 3
-UNKNOWN_THRESHOLD = 5  # numer of unknown events to hit threshold
+UNKNOWN_THRESHOLD = 10  # numer of unknown events to hit threshold
 UNKNOWN_GAP = 30  # maximum time window in seconds for valid uknown events
 SAMPLES = 8  # number of training photos per person (limit 50 in total)
 CHUNK = 2**13  # buffer size for audio capture and analysis
@@ -480,15 +480,16 @@ class Exterminating(State):
             dalek.on_event('timeout')
         else:
             print("Countdown: " + str(countdown))
-        face_names = recognise_faces()
-        if len(face_names) > 0:
+        dalek.faces = recognise_faces()
+        if len(dalek.faces) > 0:
             self.now = round(time.time())
-            for face in face_names:
-                if face == "unknown":
-                    self.unknown_count += 1
-                else:
+            for face in dalek.faces:
+                if face != "unknown":
                     self.unknown_count = 0
                     dalek.on_event("known_face")
+                elif face == "unknown":
+                    self.unknown_count += 1
+                    
         if self.unknown_count < UNKNOWN_THRESHOLD:
             print("Exterminating: unknown count - " + str(self.unknown_count))
         else:
@@ -515,7 +516,7 @@ class Exterminating(State):
         if event == 'timeout':
             return Awake()
         if event == 'known_face':
-            return Awake()
+            return Greeting()
         return self
 
 
