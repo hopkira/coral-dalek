@@ -93,8 +93,8 @@ pca.frequency = FREQUENCY
 #pygame.mixer.init()
 #pygame.mixer.music.load("./controlroom.wav")
 
-DEAD_TIME = 5  # minimum time in seconds between doorman annoucemnents
-EVENT_GAP = 60  # maximum time window in seconds for valid detection events
+DEAD_TIME = 60  # minimum time in seconds between doorman annoucemnents
+EVENT_GAP = 5  # maximum time window in seconds for valid detection events
 # no. of recognition events needed with less than
 # EVENT_GAP between them to hit threshold
 THRESHOLD = 3
