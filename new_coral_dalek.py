@@ -427,6 +427,7 @@ class Awake(State):
         else:
             print("Falling asleep in", str(countdown), "seconds")
         dalek.faces = recognise_faces()
+        print(str(dalek.faces))
         if len(dalek.faces) > 0:
             self.now = round(time.time())
             for name in dalek.faces:
