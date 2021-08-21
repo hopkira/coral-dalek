@@ -554,9 +554,9 @@ class Dalek(object):
         # Start with a default state.
         self.faces=[]
         dalek_status(AWAKE)
-        dalek_speak("...")
+        dalek_speak("Warning! Systems rebooting!")
         dalek_speak("I am Darlek Fry!")
-        time.sleep(5)
+        time.sleep(1)
         dalek_status(ASLEEP)
         self.state = Waiting()
 
