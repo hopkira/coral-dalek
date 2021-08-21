@@ -420,19 +420,19 @@ class Awake(State):
         self.now = round(time.time())
 
     def run(self):
+        dalek.faces=[]
         countdown = DEAD_TIME + self.now - round(time.time())
         if countdown <= 0:
             dalek.on_event('timeout')
         else:
             print("Falling asleep in", str(countdown), "seconds")
-        faces = recognise_faces()
-        if len(faces) > 0:
+        dalek.faces = recognise_faces()
+        if len(dalek.faces) > 0:
             self.now = round(time.time())
-            for name in faces:
+            for name in dalek.faces:
                 if name == "unknown":
                     dalek.on_event("exterminate")
                 else:
-                    dalek_greeting(name)
                     dalek.on_event("greet")
 
     def on_event(self, event):
@@ -451,6 +451,11 @@ class Greeting(State):
     '''
 
     def run(self):
+        for name in dalek.faces:
+            for person in known_people:
+                if name == person.name:
+                    person.just_seen()
+        dalek.faces=[]
         dalek.on_event('greet_done')
 
     def on_event(self, event):
@@ -544,6 +549,7 @@ class Dalek(object):
         ''' Initialise the Dalek in its Waiting state. '''
 
         # Start with a default state.
+        self.faces=[]
         dalek_status(AWAKE)
         dalek_speak("...")
         dalek_speak("I am Darlek Fry!")
@@ -721,6 +727,7 @@ print("Audio thread started...")
 
 dalek = Dalek()
 
+# Create a known_people list of Persons
 f = open("labels.pickle", 'rb')
 labels = pickle.load(f)
 labels_set = set(labels)
