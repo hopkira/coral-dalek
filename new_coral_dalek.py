@@ -424,10 +424,10 @@ class Awake(State):
         countdown = DEAD_TIME + self.now - round(time.time())
         if countdown <= 0:
             dalek.on_event('timeout')
-        else:
-            print("Falling asleep in", str(countdown), "seconds")
+        #else:
+        #    print("Falling asleep in", str(countdown), "seconds")
         dalek.faces = recognise_faces()
-        print(str(dalek.faces))
+        # print(str(dalek.faces))
         if len(dalek.faces) > 0:
             self.now = round(time.time())
             for name in dalek.faces:
@@ -479,8 +479,8 @@ class Exterminating(State):
         countdown = DEAD_TIME + self.now - round(time.time())
         if countdown <= 0:
             dalek.on_event('timeout')
-        else:
-            print("Countdown: " + str(countdown))
+        #else:
+        #    print("Countdown: " + str(countdown))
         dalek.faces = recognise_faces()
         if len(dalek.faces) > 0:
             self.now = round(time.time())
@@ -491,9 +491,7 @@ class Exterminating(State):
                 elif face == "unknown":
                     self.unknown_count += 1
                     
-        if self.unknown_count < UNKNOWN_THRESHOLD:
-            print("Exterminating: unknown count - " + str(self.unknown_count))
-        else:
+        if self.unknown_count >= UNKNOWN_THRESHOLD:
             warning = ("You are|>unrecognized. Do not|>move!",
                        ">Halt|You are an|>enemy|of the|<Darleks.",
                        "You are|>unknown|<You will|be|>exterminated!",
@@ -649,7 +647,7 @@ def dalek_speak(speech):
     various pitches, volumes and distortions
     to make the voice more Dalek like
     '''
-
+    print(speech)
     clauses = speech.split("|")
     for clause in clauses:
         if clause and not clause.isspace():
@@ -673,7 +671,7 @@ def dalek_speak(speech):
                 amplitude = AMP_DEFAULT
                 sox_vol = SOX_VOL_DEFAULT
                 sox_pitch = SOX_PITCH_DEFAULT
-            print(clause)
+            # print(clause)
             # cmd = "espeak -v en-rp '%s' -p %s -s %s -a %s -z --stdout|play -v %s - synth sine fmod 25 pitch %s" % (clause, pitch, speed, amplitude, sox_vol, sox_pitch)
             # os.system(cmd)
 
