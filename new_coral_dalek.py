@@ -93,13 +93,13 @@ pca.frequency = FREQUENCY
 #pygame.mixer.init()
 #pygame.mixer.music.load("./controlroom.wav")
 
-DEAD_TIME = 30  # minimum time in seconds between doorman annoucemnents
+DEAD_TIME = 5  # minimum time in seconds between doorman annoucemnents
 EVENT_GAP = 5  # maximum time window in seconds for valid detection events
 # no. of recognition events needed with less than
 # EVENT_GAP between them to hit threshold
 THRESHOLD = 3
 UNKNOWN_THRESHOLD = 10  # numer of unknown events to hit threshold
-UNKNOWN_GAP = 30  # maximum time window in seconds for valid uknown events
+UNKNOWN_GAP = 5  # maximum time window in seconds for valid uknown events
 SAMPLES = 8  # number of training photos per person (limit 50 in total)
 CHUNK = 2**13  # buffer size for audio capture and analysis
 RATE = 44100  # recording rate in Hz
