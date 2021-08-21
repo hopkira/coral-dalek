@@ -24,5 +24,5 @@ class FaceRecognizer():
         else:
             name = self.labels[argmin]
             name = name + " @ " + str(int(100.0*(1-min_dist))) + "%"
-            # print("Identified " + str(name))
+            print("Identified " + str(name))
         return name
