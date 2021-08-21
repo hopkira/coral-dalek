@@ -477,7 +477,7 @@ class Exterminating(State):
         self.unknown_count = 0
 
     def run(self):
-        countdown = DEAD_TIME + self.now - round(time.time())
+        countdown = ASLEEP_IN + self.now - round(time.time())
         if countdown <= 0:
             dalek.on_event('timeout')
         #else:
