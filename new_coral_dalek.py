@@ -490,7 +490,7 @@ class Exterminating(State):
                     self.unknown_count = 0
                     dalek.on_event("known_face")
         if self.unknown_count < UNKNOWN_THRESHOLD:
-            print("Exterminating: unknown count - " + str(unknown_count))
+            print("Exterminating: unknown count - " + str(self.unknown_count))
         else:
             warning = ("You are|>unrecognized. Do not|>move!",
                        ">Halt|You are an|>enemy|of the|<Darleks.",
@@ -672,8 +672,8 @@ def dalek_speak(speech):
                 sox_vol = SOX_VOL_DEFAULT
                 sox_pitch = SOX_PITCH_DEFAULT
             print(clause)
-            cmd = "espeak -v en-rp '%s' -p %s -s %s -a %s -z --stdout|play -v %s - synth sine fmod 25 pitch %s" % (clause, pitch, speed, amplitude, sox_vol, sox_pitch)
-            os.system(cmd)
+            # cmd = "espeak -v en-rp '%s' -p %s -s %s -a %s -z --stdout|play -v %s - synth sine fmod 25 pitch %s" % (clause, pitch, speed, amplitude, sox_vol, sox_pitch)
+            # os.system(cmd)
 
 
 def random_msg(phrase_dict):
