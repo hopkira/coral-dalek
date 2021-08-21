@@ -94,6 +94,7 @@ pca.frequency = FREQUENCY
 #pygame.mixer.music.load("./controlroom.wav")
 
 DEAD_TIME = 60  # minimum time in seconds between doorman annoucemnents
+ASLEEP_IN = 5
 EVENT_GAP = 5  # maximum time window in seconds for valid detection events
 # no. of recognition events needed with less than
 # EVENT_GAP between them to hit threshold
@@ -421,7 +422,7 @@ class Awake(State):
 
     def run(self):
         dalek.faces=[]
-        countdown = DEAD_TIME + self.now - round(time.time())
+        countdown = ASLEEP_IN + self.now - round(time.time())
         if countdown <= 0:
             dalek.on_event('timeout')
         #else:
