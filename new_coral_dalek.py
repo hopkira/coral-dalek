@@ -758,7 +758,7 @@ def on_message(client, userdata, message):
         dalek.on_event(event)
 
 client.on_message = on_message        # attach function to callback
-client.subscribe("/ble/advertise/d3:fe:97:d2:d1:9e/espruino/#")
+client.subscribe("/ble/advertise/d3:fe:97:d2:d1:9e/espruino/m")
 
 try:
     while True:
