@@ -5,7 +5,7 @@ last_message = ""
 client = mqtt.Client("dalek-python")
 client.connect("localhost")
 
-def on_message(message):
+def on_message(client, userdata, message):
     """
     Enables the Dalek to receive a message from an Epruino Watch via
     MQTT over Bluetooth (BLE) to place it into active or inactive States
@@ -14,9 +14,7 @@ def on_message(message):
     payload = str(message.payload.decode("utf-8"))
     if payload != last_message:
         last_message = payload
-        payload = payload.replace('"', "")
-        command = payload.split(",")
-        print(command)
+        print(payload)
         #if command[1] == "Dale" and command[2] == "face" and command[3] == "on":
         #    dalek.on_event('waiting')
         #if command[1] == "Dale" and command[2] == "face" and command[3] == "off":
