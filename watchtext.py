@@ -16,7 +16,7 @@ def on_message(client, userdata, message):
     if payload != last_message:
         last_message = payload
         event = payload[2:].lower()
-        dalek.on_event(event)
+        print("Event: ",str(event))
         #if command[1] == "Dale" and command[2] == "face" and command[3] == "on":
         #    dalek.on_event('waiting')
         #if command[1] == "Dale" and command[2] == "face" and command[3] == "off":
