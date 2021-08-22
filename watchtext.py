@@ -1,5 +1,5 @@
+import sys
 import paho.mqtt.client as mqtt
-
 
 last_message = ""
 client = mqtt.Client("dalek-python")
@@ -27,3 +27,9 @@ def on_message(message):
 client.on_message = on_message        # attach function to callback
 client.subscribe("/ble/advertise/d3:fe:97:d2:d1:9e/espruino/#")
 
+while True:
+    try:
+        client.loop(0.1)
+    except KeyboardInterrupt:
+        print("Stopped by CTRL+C")
+        sys.exit(0)
