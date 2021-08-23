@@ -11,10 +11,16 @@ recognise them.  It assumes:
     * a Google Coral TPU to provide acceleration for the face detection function
     * a database of face descriptors and labels as created by the training.py program
       (so be sure to run that program first!)
-    * a USB microphone and an amplifier for the dalek voice
+    * a USB microphone to flash the dome lights
+    * an amplifier and speakers for the dalek voice
 
-The Dalek operator can also optionally activate and deactivate the Dalek via an MQTT message
-over Bluetooth BLE; this assumes that there is a localhost MQTT server
+The Dalek operator can also optionally activate and deactivate and exercise each of its 
+visible and audible functions via an appropriately formatted MQTT message.
+
+To do this, the Pi must have a local host MQTT server installed.
+
+This implementation uses an Espruino Bangle.js watch to generate a short JSON string that
+is received by the Espruino Hub on the Raspberry Pi and translated into the MQTT message.
 
 Args:
     -o, --output (bool): Whether to show a Dalek point of view window
@@ -237,6 +243,82 @@ def dalek_light(channel,value):
     """
     pca.channels[channel].duty_cycle = int(value * 65535.0)
 
+def dalek_speak(speech):
+    '''
+    Break speech up into clauses and speak each one with
+    various pitches, volumes and distortions
+    to make the voice more Dalek like
+    '''
+    print(speech)
+    clauses = speech.split("|")
+    for clause in clauses:
+        if clause and not clause.isspace():
+            if clause[:1] == ">":
+                clause = clause[1:]
+                pitch = PITCH_DEFAULT
+                speed = SPEED_DOWN
+                amplitude = AMP_UP
+                sox_vol = SOX_VOL_UP
+                sox_pitch = SOX_PITCH_UP
+            elif clause[:1] == "<":
+                clause = clause[1:]
+                pitch = PITCH_DOWN
+                speed = SPEED_DOWN
+                amplitude = AMP_DOWN
+                sox_vol = SOX_VOL_DOWN
+                sox_pitch = SOX_PITCH_DOWN
+            else:
+                pitch = PITCH_DEFAULT
+                speed = SPEED_DEFAULT
+                amplitude = AMP_DEFAULT
+                sox_vol = SOX_VOL_DEFAULT
+                sox_pitch = SOX_PITCH_DEFAULT
+            # print(clause)
+            cmd = "espeak -v en-rp '%s' -p %s -s %s -a %s -z --stdout|play -v %s - synth sine fmod 25 pitch %s" % (clause, pitch, speed, amplitude, sox_vol, sox_pitch)
+            os.system(cmd)
+
+def random_msg(phrase_dict):
+    '''Choose a random phrase from a list'''
+
+    length = len(phrase_dict)
+    index = random.randint(0, length-1)
+    message = phrase_dict[index]
+    return message
+
+def dalek_greeting(name):
+    '''Dalek will issue an appropriate greeting depending upon context'''
+
+    greeting = ("Have a|>nice|day|>name",
+                "Hello name, you are a|>friend|of the|<Darleks",
+                "Greetings name",
+                "Hello name",
+                "name is recognized",
+                "name is in the hall")
+    response = random_msg(greeting)
+    response = response.replace('name', name)
+    print(response)
+    dalek_speak(response)
+    return
+
+def dalek_exterminate():
+    '''Dalek will issue a random extermination'''
+
+    warning = ("You are|>unrecognized. Do not|>move!",
+                ">Halt|You are an|>enemy|of the|<Darleks.",
+                "You are|>unknown|<You will|be|>exterminated!",
+                "Intruder|>alert!",
+                "<Enemy|detected!|>Exterminate!",
+                "Halt. Do not|<move.|You will|>obey!",
+                "Obey the Darleks!|>Obey the Darleks!",
+                "Unknown human|<in hall|>Exterminate!",
+                "Do not|>move.|You will be|>exterminated!",
+                "Warning|>Warning|Do not move!",
+                "Danger|Intruder detected|>Danger",
+                "I am a Darlek|You must not move")
+    response = random_msg(warning)
+    dalek.unknown_count = 0
+    dalek_speak(response)
+    return
 
 class Person:
     '''The Person class represents the people known to the Dalek'''
@@ -351,6 +433,8 @@ class State(object):
 
 
 # Start Dalek states
+
+
 class Waiting(State):
     '''
     The child state where the Dalek is scanning for faces, but appears dormant
@@ -367,7 +451,7 @@ class Waiting(State):
             dalek.on_event('face_detected')
 
     def on_event(self, event):
-        if event == 'silent':
+        if event == 'dalfacoff':
             return Silent()
         if event == 'face_detected':
             return WakingUp()
@@ -387,8 +471,28 @@ class Silent(State):
         time.sleep(0.1)
 
     def on_event(self, event):
-        if event == 'waiting':
+        if event == 'dalfacon':
             return Waiting()
+        if event == 'spelefend':
+            dalek_greeting("Richard")
+        if event == 'sperigend':
+            dalek_exterminate()
+        if event == 'iriseroff':
+            dalek_servo(IRIS_SERVO, 0)
+        if event == 'iriseron':
+            dalek_servo(IRIS_SERVO, 1)
+        if event == 'iriligon':
+            dalek_light(IRIS_LIGHT, 1)
+        if event == 'iriliigoff':
+            dalek_light(IRIS_LIGHT, 0)
+        if event == 'ligdomon':
+            dalek_light(DOME_LIGHTS, 1)
+        if event == 'ligdomon':
+            dalek_light(DOME_LIGHTS, 0)
+        #if event == 'lighovon':
+        #    dalek_light(HOVER_LIGHTS, 1)
+        #if event == 'lighovoff':
+        #    dalek_light(HOVER_LIGHTS, 0)   
         return self
 
 
@@ -537,6 +641,7 @@ class FallingAsleep(State):
             return Waiting()
         return self
 
+
 # End Dalek states.
 
 
@@ -613,7 +718,6 @@ def detect_faces():
     face_box_list = detect.get_objects(interpreter, args['face'], scale)
     return image, frame, face_box_list
 
-
 def recognise_faces():
     '''
     Grabs a video frame and detects whether there are faces in the video image
@@ -640,67 +744,6 @@ def recognise_faces():
     if args['output']:
         dalek_pov_window(image)
     return face_names
-
-
-def dalek_speak(speech):
-    '''
-    Break speech up into clauses and speak each one with
-    various pitches, volumes and distortions
-    to make the voice more Dalek like
-    '''
-    print(speech)
-    clauses = speech.split("|")
-    for clause in clauses:
-        if clause and not clause.isspace():
-            if clause[:1] == ">":
-                clause = clause[1:]
-                pitch = PITCH_DEFAULT
-                speed = SPEED_DOWN
-                amplitude = AMP_UP
-                sox_vol = SOX_VOL_UP
-                sox_pitch = SOX_PITCH_UP
-            elif clause[:1] == "<":
-                clause = clause[1:]
-                pitch = PITCH_DOWN
-                speed = SPEED_DOWN
-                amplitude = AMP_DOWN
-                sox_vol = SOX_VOL_DOWN
-                sox_pitch = SOX_PITCH_DOWN
-            else:
-                pitch = PITCH_DEFAULT
-                speed = SPEED_DEFAULT
-                amplitude = AMP_DEFAULT
-                sox_vol = SOX_VOL_DEFAULT
-                sox_pitch = SOX_PITCH_DEFAULT
-            # print(clause)
-            cmd = "espeak -v en-rp '%s' -p %s -s %s -a %s -z --stdout|play -v %s - synth sine fmod 25 pitch %s" % (clause, pitch, speed, amplitude, sox_vol, sox_pitch)
-            os.system(cmd)
-
-
-def random_msg(phrase_dict):
-    '''Choose a random phrase from a list'''
-
-    length = len(phrase_dict)
-    index = random.randint(0, length-1)
-    message = phrase_dict[index]
-    return message
-
-
-def dalek_greeting(name):
-    '''Dalek will issue an appropriate greeting depending upon context'''
-
-    greeting = ("Have a|>nice|day|>name",
-                "Hello name, you are a|>friend|of the|<Darleks",
-                "Greetings name",
-                "Hello name",
-                "name is recognized",
-                "name is in the hall")
-    response = random_msg(greeting)
-    response = response.replace('name', name)
-    print(response)
-    dalek_speak(response)
-    return
-
 
 # Sets up a daemon thread to flash lights in line with sound
 def flash_dome_lights():
