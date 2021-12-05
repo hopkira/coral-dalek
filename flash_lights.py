@@ -46,7 +46,7 @@ def flash_dome_lights():
         try:
             data = np.frombuffer(stream.read(CHUNK, False),dtype=np.int16)
             vol = abs(int(np.average(np.abs(data))))
-            print(vol)
+            # print(vol)
             if vol > VOL_MIN:
                 vol = min(1.0, vol/VOL_MAX)
                 dalek_light(DOME_LIGHTS, vol)
